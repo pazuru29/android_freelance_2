@@ -119,4 +119,21 @@ class AppColors {
     },
   );
   static const int _purpleText = 0xFF6D77CD;
+
+  static const MaterialColor darkPurpleText = MaterialColor(
+    _darkPurpleText,
+    <int, Color>{
+      50: Color(0xFF100726),
+      100: Color(0xFF100726),
+      200: Color(0xFF100726),
+      300: Color(0xFF100726),
+      400: Color(0xFF100726),
+      500: Color(_darkPurpleText),
+      600: Color(0xFF100726),
+      700: Color(0xFF100726),
+      800: Color(0xFF100726),
+      900: Color(0xFF100726),
+    },
+  );
+  static const int _darkPurpleText = 0xFF100726;
 }

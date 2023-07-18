@@ -16,11 +16,13 @@ class BaseScreenState<T extends BaseScreen> extends State<T> {
     return Scaffold(
       backgroundColor: AppColors.darkBlue,
       body: Container(
+        height: MediaQuery.of(context).size.height,
         decoration: const BoxDecoration(
           gradient: AppGradients.backgroundGradient,
         ),
         child: needScroll()
             ? CustomScrollView(
+                shrinkWrap: true,
                 physics: const ClampingScrollPhysics(),
                 slivers: [
                   SliverToBoxAdapter(

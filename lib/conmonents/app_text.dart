@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class AppText extends StatefulWidget {
   final String text;
   final AppStyle style;
-  final MaterialColor color;
+  final Color color;
   final int? maxLines;
   final TextOverflow? overflow;
   final TextAlign align;

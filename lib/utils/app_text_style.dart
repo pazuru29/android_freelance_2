@@ -44,6 +44,11 @@ class AppTextStyles {
     fontSize: 30,
     fontWeight: FontWeight.w700,
   );
+
+  static const AppStyle bold17 = AppStyle(
+    fontSize: 17,
+    fontWeight: FontWeight.w700,
+  );
 }
 
 class AppStyle {
