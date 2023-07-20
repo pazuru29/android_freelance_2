@@ -136,4 +136,72 @@ class AppColors {
     },
   );
   static const int _darkPurpleText = 0xFF100726;
+
+  static const MaterialColor backgroundActivity = MaterialColor(
+    _backgroundActivity,
+    <int, Color>{
+      50: Color(0xFF332E61),
+      100: Color(0xFF332E61),
+      200: Color(0xFF332E61),
+      300: Color(0xFF332E61),
+      400: Color(0xFF332E61),
+      500: Color(_backgroundActivity),
+      600: Color(0xFF332E61),
+      700: Color(0xFF332E61),
+      800: Color(0xFF332E61),
+      900: Color(0xFF332E61),
+    },
+  );
+  static const int _backgroundActivity = 0xFF332E61;
+
+  static const MaterialColor linePurple = MaterialColor(
+    _linePurple,
+    <int, Color>{
+      50: Color(0xFF897FE3),
+      100: Color(0xFF897FE3),
+      200: Color(0xFF897FE3),
+      300: Color(0xFF897FE3),
+      400: Color(0xFF897FE3),
+      500: Color(_linePurple),
+      600: Color(0xFF897FE3),
+      700: Color(0xFF897FE3),
+      800: Color(0xFF897FE3),
+      900: Color(0xFF897FE3),
+    },
+  );
+  static const int _linePurple = 0xFF897FE3;
+
+  static const MaterialColor backgroundCard = MaterialColor(
+    _backgroundCard,
+    <int, Color>{
+      50: Color(0xFF494384),
+      100: Color(0xFF494384),
+      200: Color(0xFF494384),
+      300: Color(0xFF494384),
+      400: Color(0xFF494384),
+      500: Color(_backgroundCard),
+      600: Color(0xFF494384),
+      700: Color(0xFF494384),
+      800: Color(0xFF494384),
+      900: Color(0xFF494384),
+    },
+  );
+  static const int _backgroundCard = 0xFF494384;
+
+  static const MaterialColor green = MaterialColor(
+    _green,
+    <int, Color>{
+      50: Color(0xFF79FF97),
+      100: Color(0xFF79FF97),
+      200: Color(0xFF79FF97),
+      300: Color(0xFF79FF97),
+      400: Color(0xFF79FF97),
+      500: Color(_green),
+      600: Color(0xFF79FF97),
+      700: Color(0xFF79FF97),
+      800: Color(0xFF79FF97),
+      900: Color(0xFF79FF97),
+    },
+  );
+  static const int _green = 0xFF79FF97;
 }

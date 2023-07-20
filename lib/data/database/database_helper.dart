@@ -1,0 +1,137 @@
+import 'dart:io';
+
+import 'package:android_freelance_2/data/database/models/history_model.dart';
+import 'package:android_freelance_2/data/database/models/match_model.dart';
+import 'package:android_freelance_2/data/database/models/round_model.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+
+class DatabaseHelper {
+  DatabaseHelper._instance();
+
+  static final DatabaseHelper instance = DatabaseHelper._instance();
+
+  static Database? _database;
+
+  Future<Database> get database async => _database ??= await _initDatabase();
+
+  Future<Database> _initDatabase() async {
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = join(documentsDirectory.path, 'sport_matches.db');
+
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: _onCreate,
+    );
+  }
+
+  Future _onCreate(Database db, int version) async {
+    await db.execute('''CREATE TABLE matches (
+    id INTEGER PRIMARY KEY,
+    name	TEXT,
+    name_team_1 TEXT NOT NULL,
+    name_team_2 TEXT NOT NULL,
+    score_team_1 INTEGER NOT NULL,
+    score_team_2 INTEGER NOT NULL,
+    is_finished INTEGER NOT NULL,
+    team_win INTEGER,
+    game_type INTEGER NOT NULL,
+    max_score INTEGER
+    )''');
+
+    await db.execute('''CREATE TABLE rounds (
+    id INTEGER NOT NULL,
+    number_of_round INTEGER NOT NULL,
+    time_of_round INTEGER NOT NULL
+    )''');
+
+    await db.execute('''CREATE TABLE history (
+    id INTEGER NOT NULL,
+    nameOfTeam TEXT NOT NULL,
+    time TEXT NOT NULL
+    )''');
+  }
+
+  Future<List<MatchModel>> getActiveMatches() async {
+    Database db = await instance.database;
+    var matches = await db.query('matches');
+    return matches
+        .map((e) => MatchModel.fromMap(e))
+        .toList()
+        .where((element) => element.isFinished == 0)
+        .toList();
+  }
+
+  Future<List<MatchModel>> getFinishedMatches() async {
+    Database db = await instance.database;
+    var matches = await db.query('matches');
+    return matches
+        .map((e) => MatchModel.fromMap(e))
+        .toList()
+        .where((element) => element.isFinished == 1)
+        .toList();
+  }
+
+  Future<List<RoundModel>> getRounds() async {
+    Database db = await instance.database;
+    var rounds = await db.query('rounds');
+    return rounds.map((e) => RoundModel.fromMap(e)).toList();
+  }
+
+  Future<List<HistoryModel>> getHistory() async {
+    Database db = await instance.database;
+    var history = await db.query('history');
+    return history.map((e) => HistoryModel.fromMap(e)).toList();
+  }
+
+  //MatchModel
+  Future<int?> addMatch(MatchModel matchModel) async {
+    Database db = await instance.database;
+    return await db.insert('matches', matchModel.toMap());
+  }
+
+  Future<int?> deleteMatchById(MatchModel matchModel) async {
+    Database db = await instance.database;
+    return db.delete('matches', where: 'id = ?', whereArgs: [matchModel.id]);
+  }
+
+  Future<int?> updateMatchById(MatchModel matchModel) async {
+    Database db = await instance.database;
+    return db.update('matches', matchModel.toMap(),
+        where: 'id = ?', whereArgs: [matchModel.id]);
+  }
+
+  //RoundModel
+  Future<int?> addRound(RoundModel roundModel) async {
+    Database db = await instance.database;
+    return await db.insert('rounds', roundModel.toMap());
+  }
+
+  Future<int?> deleteRounds(MatchModel matchModel) async {
+    Database db = await instance.database;
+    return db.delete('rounds', where: 'id = ?', whereArgs: [matchModel.id]);
+  }
+
+  Future<List<RoundModel>> getRoundsById(int id) async {
+    Database db = await instance.database;
+    var rounds = await db.query(
+      'rounds',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    return rounds.map((e) => RoundModel.fromMap(e)).toList();
+  }
+
+  //HistoryModel
+  Future<int?> addHistory(HistoryModel historyModel) async {
+    Database db = await instance.database;
+    return await db.insert('history', historyModel.toMap());
+  }
+
+  Future<int?> deleteHistory(MatchModel matchModel) async {
+    Database db = await instance.database;
+    return db.delete('rounds', where: 'id = ?', whereArgs: [matchModel.id]);
+  }
+}

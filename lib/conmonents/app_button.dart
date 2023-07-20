@@ -8,19 +8,37 @@ class AppButton extends StatefulWidget {
   final String title;
   final Color bgColor;
   final double? width;
-  final double height;
+  final double height, borderRadius;
   final bool needShadow;
   final VoidCallback? onPressed;
+  bool isOutlined = false;
 
-  const AppButton({
+  AppButton({
     Key? key,
     required this.title,
     this.bgColor = AppColors.lightPurple,
     this.width,
     this.height = 55,
     this.needShadow = false,
+    this.borderRadius = 100,
     this.onPressed,
   }) : super(key: key);
+
+  static AppButton outlined({
+    required String title,
+    Color buttonColor = AppColors.lightPurple,
+    double? width,
+    double height = 55,
+    VoidCallback? onPressed,
+  }) {
+    return AppButton(
+      title: title,
+      height: height,
+      width: width,
+      bgColor: buttonColor,
+      onPressed: onPressed,
+    )..isOutlined = true;
+  }
 
   @override
   State<AppButton> createState() => _AppButtonState();
@@ -87,8 +105,11 @@ class _AppButtonState extends State<AppButton> {
                   ),
                 ]
               : null,
-          borderRadius: BorderRadius.circular(100),
-          color: _getMainColor(),
+          borderRadius: BorderRadius.circular(widget.borderRadius),
+          border: widget.isOutlined
+              ? Border.all(color: _getMainColor(), width: 2)
+              : null,
+          color: widget.isOutlined ? Colors.transparent : _getMainColor(),
         ),
         child: _getMainWidget(),
       ),
@@ -99,7 +120,7 @@ class _AppButtonState extends State<AppButton> {
     return AppText(
       style: AppTextStyles.bold17,
       text: widget.title,
-      color: _getTextColor(),
+      color: widget.isOutlined ? _getMainColor() : _getTextColor(),
     );
   }
 

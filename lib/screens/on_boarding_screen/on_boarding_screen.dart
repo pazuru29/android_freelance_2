@@ -1,6 +1,7 @@
 import 'package:android_freelance_2/conmonents/app_button.dart';
 import 'package:android_freelance_2/conmonents/app_text.dart';
 import 'package:android_freelance_2/conmonents/base_screen.dart';
+import 'package:android_freelance_2/controllers/navigation/app_navigator.dart';
 import 'package:android_freelance_2/utils/app_images.dart';
 import 'package:android_freelance_2/utils/app_strings.dart';
 import 'package:android_freelance_2/utils/app_text_style.dart';
@@ -16,20 +17,13 @@ class OnBoardingScreen extends BaseScreen {
 }
 
 class _OnBoardingScreenState extends BaseScreenState<OnBoardingScreen> {
-  double heightOfImage = 0;
+  final double _heightOfImage = 450;
 
   @override
   Widget buildMain(BuildContext context) {
     return Column(
       children: [
-        MeasureSize(
-          onChange: (size) {
-            setState(() {
-              heightOfImage = size.height;
-            });
-          },
-          child: Image.asset(AppImages.imOnBoarding),
-        ),
+        Image.asset(AppImages.imOnBoarding),
         const Gap(40),
         _bodyWidget(),
       ],
@@ -40,7 +34,7 @@ class _OnBoardingScreenState extends BaseScreenState<OnBoardingScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 25),
       height: MediaQuery.of(context).size.height -
-          (heightOfImage +
+          (_heightOfImage +
               MediaQuery.of(context).padding.bottom +
               MediaQuery.of(context).padding.top),
       child: Column(
@@ -69,7 +63,9 @@ class _OnBoardingScreenState extends BaseScreenState<OnBoardingScreen> {
           const Spacer(),
           AppButton(
             title: 'Create first match',
-            onPressed: () {},
+            onPressed: () {
+              AppNavigator.replaceToHomeScreen();
+            },
           ),
           const Gap(16),
         ],

@@ -16,6 +16,7 @@ class BaseScreenState<T extends BaseScreen> extends State<T> {
     return Scaffold(
       backgroundColor: AppColors.darkBlue,
       body: Container(
+        width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         decoration: const BoxDecoration(
           gradient: AppGradients.backgroundGradient,
