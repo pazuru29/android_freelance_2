@@ -3,6 +3,7 @@ import 'package:android_freelance_2/conmonents/app_icon_button.dart';
 import 'package:android_freelance_2/conmonents/app_text.dart';
 import 'package:android_freelance_2/conmonents/base_screen.dart';
 import 'package:android_freelance_2/conmonents/main_app_bar.dart';
+import 'package:android_freelance_2/controllers/game_controller/game_controller.dart';
 import 'package:android_freelance_2/controllers/home_controller/home_controller.dart';
 import 'package:android_freelance_2/controllers/navigation/app_navigator.dart';
 import 'package:android_freelance_2/screens/home_screen/widgets/match_card.dart';
@@ -102,6 +103,7 @@ class _HomeScreenState extends BaseScreenState<HomeScreen>
             const Gap(25),
             Flexible(
               child: TabBarView(
+                physics: const NeverScrollableScrollPhysics(),
                 controller: _tabController,
                 children: [
                   ListView.builder(
@@ -109,9 +111,22 @@ class _HomeScreenState extends BaseScreenState<HomeScreen>
                     padding: EdgeInsets.zero,
                     shrinkWrap: true,
                     itemCount: _homeController.listOfActiveMatches.isEmpty
-                        ? 0
+                        ? 1
                         : _homeController.listOfActiveMatches.length + 1,
                     itemBuilder: (context, index) {
+                      if (_homeController.listOfActiveMatches.isEmpty) {
+                        return const Padding(
+                          padding: EdgeInsets.only(top: 36),
+                          child: Center(
+                            child: AppText(
+                              key: ValueKey('-43543634'),
+                              text: 'No sports matches were created.',
+                              style: AppTextStyles.medium16,
+                              color: AppColors.purpleText,
+                            ),
+                          ),
+                        );
+                      }
                       if (index == _homeController.listOfActiveMatches.length) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(
@@ -129,16 +144,77 @@ class _HomeScreenState extends BaseScreenState<HomeScreen>
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 15),
                         child: MatchCard(
-                          matchModel: _homeController.listOfActiveMatches[index],
+                          key: ValueKey(_homeController
+                              .listOfActiveMatches[index].id
+                              .toString()),
+                          gameController: _homeController
+                                      .listOfMatchesGameControllers[
+                                  _homeController.listOfActiveMatches[index].id
+                                      .toString()] ??
+                              GameController(),
                         ),
                       );
                     },
                   ),
-                  Container(),
+                  ListView.builder(
+                    physics: const ClampingScrollPhysics(),
+                    padding: EdgeInsets.zero,
+                    shrinkWrap: true,
+                    itemCount: _homeController.listOfFinishedMatches.isEmpty
+                        ? 1
+                        : _homeController.listOfFinishedMatches.length + 1,
+                    itemBuilder: (context, index) {
+                      if (_homeController.listOfFinishedMatches.isEmpty) {
+                        return const Padding(
+                          padding: EdgeInsets.only(top: 36),
+                          child: Center(
+                            child: AppText(
+                              key: ValueKey('-313213213'),
+                              text: 'No sports matches were created.',
+                              style: AppTextStyles.medium16,
+                              color: AppColors.purpleText,
+                            ),
+                          ),
+                        );
+                      }
+                      if (index ==
+                          _homeController.listOfFinishedMatches.length) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 25,
+                            vertical: 16,
+                          ),
+                          child: AppButton.outlined(
+                            title: AppStrings.btnCreateNewMatch,
+                            onPressed: () {
+                              AppNavigator.goToCreateNewGameScreen();
+                            },
+                          ),
+                        );
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 15),
+                        child: MatchCard(
+                          key: ValueKey(_homeController
+                              .listOfFinishedMatches[index].id
+                              .toString()),
+                          gameController:
+                              _homeController.listOfMatchesGameControllers[
+                                      _homeController
+                                          .listOfFinishedMatches[index].id
+                                          .toString()] ??
+                                  GameController(),
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
-            if (_homeController.listOfActiveMatches.isEmpty)
+            if ((_homeController.listOfActiveMatches.isEmpty &&
+                    _tabController.index == 0) ||
+                (_homeController.listOfFinishedMatches.isEmpty &&
+                    _tabController.index == 1))
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 25,

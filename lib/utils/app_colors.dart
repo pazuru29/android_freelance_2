@@ -204,4 +204,21 @@ class AppColors {
     },
   );
   static const int _green = 0xFF79FF97;
+
+  static const MaterialColor red = MaterialColor(
+    _red,
+    <int, Color>{
+      50: Color(0xFFFF7979),
+      100: Color(0xFFFF7979),
+      200: Color(0xFFFF7979),
+      300: Color(0xFFFF7979),
+      400: Color(0xFFFF7979),
+      500: Color(_red),
+      600: Color(0xFFFF7979),
+      700: Color(0xFFFF7979),
+      800: Color(0xFFFF7979),
+      900: Color(0xFFFF7979),
+    },
+  );
+  static const int _red = 0xFFFF7979;
 }

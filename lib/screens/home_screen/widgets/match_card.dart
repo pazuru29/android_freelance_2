@@ -1,18 +1,23 @@
+import 'dart:ui';
+
 import 'package:android_freelance_2/conmonents/app_text.dart';
+import 'package:android_freelance_2/controllers/game_controller/game_controller.dart';
 import 'package:android_freelance_2/controllers/navigation/app_navigator.dart';
-import 'package:android_freelance_2/data/database/models/match_model.dart';
 import 'package:android_freelance_2/utils/app_colors.dart';
 import 'package:android_freelance_2/utils/app_icons.dart';
 import 'package:android_freelance_2/utils/app_text_style.dart';
+import 'package:android_freelance_2/utils/extansions/app_date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MatchCard extends StatefulWidget {
-  final MatchModel matchModel;
+  final GameController gameController;
 
   const MatchCard({
-    required this.matchModel,
+    required this.gameController,
     super.key,
   });
 
@@ -20,100 +25,147 @@ class MatchCard extends StatefulWidget {
   State<MatchCard> createState() => _MatchCardState();
 }
 
-class _MatchCardState extends State<MatchCard> {
+class _MatchCardState extends State<MatchCard> with WidgetsBindingObserver {
   final double _bodyHeight = 120;
+
+  late GameController _gameController;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.paused) {
+      _gameController.setRemainingTime();
+      print('PAUSED');
+      if (_gameController.matchModel?.timerType == 1) {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setDouble(
+            '${_gameController.id}', _gameController.currentTime);
+        prefs.setString('${_gameController.id}_dateTime',
+            AppDate.dataBaseFormatter(DateTime.now()));
+        _gameController.pauseTimer();
+      }
+    }
+
+    if (state == AppLifecycleState.resumed) {
+      _gameController.checkTimeAfterCloseApp();
+    }
+  }
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    _gameController = Get.put(widget.gameController,
+        tag: widget.gameController.id.toString());
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25),
-      child: GestureDetector(
-        onTap: () {
-          AppNavigator.goToGameScreen(widget.matchModel);
-        },
-        child: Container(
-          color: Colors.transparent,
-          child: Column(
-            children: [
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
-                decoration: const BoxDecoration(
-                  color: AppColors.backgroundCard,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
+    return Obx(
+      () => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25),
+        child: GestureDetector(
+          onTap: () {
+            AppNavigator.goToGameScreen(widget.gameController);
+          },
+          child: Container(
+            color: Colors.transparent,
+            child: Column(
+              children: [
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
+                  decoration: const BoxDecoration(
+                    color: AppColors.backgroundCard,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          SvgPicture.asset(_getGameTypeIcon()),
+                          const Gap(7),
+                          AppText(
+                            text: _getGameTypeName(),
+                            style: AppTextStyles.medium14,
+                          ),
+                        ],
+                      ),
+                      AppText(
+                        text:
+                            widget.gameController.matchModel?.name ?? 'My game',
+                        style: AppTextStyles.medium14,
+                      ),
+                    ],
                   ),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        SvgPicture.asset(_getGameTypeIcon()),
-                        const Gap(7),
-                        AppText(
-                          text: _getGameTypeName(),
-                          style: AppTextStyles.medium14,
-                        ),
-                      ],
-                    ),
-                    AppText(
-                      text: widget.matchModel.name ?? 'My game',
-                      style: AppTextStyles.medium14,
-                    ),
-                  ],
+                Container(
+                  height: 1,
+                  color: AppColors.linePurple,
                 ),
-              ),
-              Container(
-                height: 1,
-                color: AppColors.linePurple,
-              ),
-              Stack(
-                children: [
-                  Container(
-                    height: _bodyHeight,
-                    decoration: const BoxDecoration(
-                      color: AppColors.backgroundActivity,
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(10),
-                        bottomRight: Radius.circular(10),
+                Stack(
+                  children: [
+                    Container(
+                      height: _bodyHeight,
+                      decoration: const BoxDecoration(
+                        color: AppColors.backgroundActivity,
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(10),
+                          bottomRight: Radius.circular(10),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Flexible(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _nameTeam(
+                                    widget.gameController.matchModel
+                                            ?.nameTeam1 ??
+                                        '',
+                                    widget.gameController.matchModel?.teamWin ==
+                                        1),
+                              ],
+                            ),
+                          ),
+                          const Gap(25),
+                          Container(
+                            width: 1,
+                            height: _bodyHeight,
+                            color: AppColors.linePurple,
+                          ),
+                          const Gap(25),
+                          Flexible(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _nameTeam(
+                                    widget.gameController.matchModel
+                                            ?.nameTeam2 ??
+                                        '',
+                                    widget.gameController.matchModel?.teamWin ==
+                                        2),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    child: Row(
-                      children: [
-                        Flexible(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              _nameTeam(widget.matchModel.nameTeam1,
-                                  widget.matchModel.teamWin == 1),
-                            ],
-                          ),
-                        ),
-                        const Gap(25),
-                        Container(
-                          width: 1,
-                          height: _bodyHeight,
-                          color: AppColors.linePurple,
-                        ),
-                        const Gap(25),
-                        Flexible(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              _nameTeam(widget.matchModel.nameTeam2,
-                                  widget.matchModel.teamWin == 2),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  _scoreWidget(),
-                ],
-              ),
-            ],
+                    _scoreWidget(),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -121,7 +173,7 @@ class _MatchCardState extends State<MatchCard> {
   }
 
   Widget _scoreWidget() {
-    if (widget.matchModel.isFinished == 1) {
+    if (widget.gameController.matchModel?.timerType == 3) {
       return Center(
         child: Container(
           height: 62,
@@ -139,9 +191,10 @@ class _MatchCardState extends State<MatchCard> {
               )
             ],
           ),
-          child: const FittedBox(
+          child: FittedBox(
             child: AppText(
-              text: '3 - 1',
+              text: '${_gameController.matchModel?.scoreTeam1} '
+                  '- ${_gameController.matchModel?.scoreTeam2}',
               style: AppTextStyles.semiBold25,
               color: AppColors.darkPurpleText,
             ),
@@ -154,7 +207,7 @@ class _MatchCardState extends State<MatchCard> {
           height: 62,
           width: 65,
           margin: const EdgeInsets.only(top: 24),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 4),
           decoration: BoxDecoration(
               color: AppColors.purple,
               borderRadius: BorderRadius.circular(10),
@@ -165,9 +218,16 @@ class _MatchCardState extends State<MatchCard> {
                   offset: const Offset(2, 5),
                 )
               ]),
-          child: const FittedBox(
+          child: FittedBox(
             child: AppText(
-              text: 'VS',
+              text: _gameController.isRoundMatch == false
+                  ? '${_gameController.matchModel?.scoreTeam1} - ${_gameController.matchModel?.scoreTeam2}'
+                  : _gameController.isRoundMatch == true &&
+                          _gameController.matchModel?.timerType != 0 &&
+                          _gameController.matchModel?.timerType != 3 &&
+                          _gameController.roundsTime.isNotEmpty
+                      ? '${((_gameController.roundsTime.first - _gameController.currentTime.toInt()) ~/ 60).toString().padLeft(2, '0')}:${((_gameController.roundsTime.first - _gameController.currentTime.toInt()) % 60).toString().padLeft(2, '0')}'
+                      : 'VS',
               style: AppTextStyles.semiBold25,
             ),
           ),
@@ -191,7 +251,7 @@ class _MatchCardState extends State<MatchCard> {
                 borderRadius: BorderRadius.circular(100),
               ),
               child: SvgPicture.asset(
-                AppIcons.icSoccer,
+                _getGameTypeIcon(),
                 color: isWin ? AppColors.darkPurpleText : AppColors.white,
               ),
             ),
@@ -212,7 +272,7 @@ class _MatchCardState extends State<MatchCard> {
   }
 
   String _getGameTypeName() {
-    switch (widget.matchModel.gameType) {
+    switch (widget.gameController.matchModel?.gameType) {
       case 2:
         return 'Basketball';
       case 3:
@@ -225,7 +285,7 @@ class _MatchCardState extends State<MatchCard> {
   }
 
   String _getGameTypeIcon() {
-    switch (widget.matchModel.gameType) {
+    switch (widget.gameController.matchModel?.gameType) {
       case 2:
         return AppIcons.icBasketball;
       case 3:

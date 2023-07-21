@@ -1,3 +1,4 @@
+import 'package:android_freelance_2/controllers/game_controller/game_controller.dart';
 import 'package:android_freelance_2/data/database/models/match_model.dart';
 import 'package:android_freelance_2/screens/create_new_game_screen/create_new_game_screen.dart';
 import 'package:android_freelance_2/screens/game_screen/game_screen.dart';
@@ -32,10 +33,10 @@ class AppNavigator {
     Get.to(() => const CreateNewGameScreen());
   }
 
-  static void goToGameScreen(MatchModel matchModel) {
+  static void goToGameScreen(GameController gameController) {
     Get.to(
       () => GameScreen(
-        matchModel: matchModel,
+        gameController: gameController,
       ),
     );
   }

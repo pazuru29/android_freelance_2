@@ -48,7 +48,7 @@ class CreateNewGameController extends GetxController {
   List<AppDropDownButtonModel> listOfTime = [
     AppDropDownButtonModel(title: '90:00', valueDatabase: 5400),
     AppDropDownButtonModel(title: '30:00', valueDatabase: 1800),
-    AppDropDownButtonModel(title: '15:00', valueDatabase: 900),
+    AppDropDownButtonModel(title: '15:00', valueDatabase: 10), //900
   ];
 
   List<AppDropDownButtonModel> listOfScore = [
@@ -148,7 +148,9 @@ class CreateNewGameController extends GetxController {
         nameTeam2: nameTeam2,
         scoreTeam1: 0,
         scoreTeam2: 0,
-        isFinished: 0,
+        timerType: 0,
+        remainingTime: _rulesType.value == 0 ? 0 : null,
+        currentRound: 1,
         gameType: _currentGameType.value.value?.valueDatabase ?? 0,
         maxScore: _rulesType.value == 1
             ? int.tryParse(_currentScoreType.value.title)
@@ -172,7 +174,7 @@ class CreateNewGameController extends GetxController {
           );
         }
       }
-      _homeController.refreshActiveMatches();
+      _homeController.refreshAllData();
       AppNavigator.goBack();
     });
   }

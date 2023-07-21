@@ -35,10 +35,12 @@ class DatabaseHelper {
     name_team_2 TEXT NOT NULL,
     score_team_1 INTEGER NOT NULL,
     score_team_2 INTEGER NOT NULL,
-    is_finished INTEGER NOT NULL,
+    timer_type INTEGER NOT NULL,
     team_win INTEGER,
     game_type INTEGER NOT NULL,
-    max_score INTEGER
+    max_score INTEGER,
+    remaining_time REAL,
+    current_round INTEGER
     )''');
 
     await db.execute('''CREATE TABLE rounds (
@@ -60,7 +62,7 @@ class DatabaseHelper {
     return matches
         .map((e) => MatchModel.fromMap(e))
         .toList()
-        .where((element) => element.isFinished == 0)
+        .where((element) => element.timerType != 3)
         .toList();
   }
 
@@ -70,7 +72,7 @@ class DatabaseHelper {
     return matches
         .map((e) => MatchModel.fromMap(e))
         .toList()
-        .where((element) => element.isFinished == 1)
+        .where((element) => element.timerType == 3)
         .toList();
   }
 
@@ -101,6 +103,12 @@ class DatabaseHelper {
     Database db = await instance.database;
     return db.update('matches', matchModel.toMap(),
         where: 'id = ?', whereArgs: [matchModel.id]);
+  }
+
+  Future<MatchModel> getActiveMatchesById(int id) async {
+    Database db = await instance.database;
+    var match = await db.query('matches', where: 'id = ?', whereArgs: [id]);
+    return match.map((e) => MatchModel.fromMap(e)).toList().first;
   }
 
   //RoundModel

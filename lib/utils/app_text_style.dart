@@ -22,6 +22,11 @@ class AppTextStyles {
     fontWeight: FontWeight.w400,
   );
 
+  static const AppStyle regular19 = AppStyle(
+    fontSize: 19,
+    fontWeight: FontWeight.w400,
+  );
+
   static const AppStyle regular21 = AppStyle(
     fontSize: 21,
     fontWeight: FontWeight.w400,

@@ -5,10 +5,12 @@ class MatchModel {
   String nameTeam2;
   int scoreTeam1;
   int scoreTeam2;
-  int isFinished;
+  int timerType;
   int? teamWin;
   int gameType;
   int? maxScore;
+  num? remainingTime;
+  int? currentRound;
 
   MatchModel({
     this.id,
@@ -17,10 +19,12 @@ class MatchModel {
     required this.nameTeam2,
     required this.scoreTeam1,
     required this.scoreTeam2,
-    required this.isFinished,
+    required this.timerType,
     required this.gameType,
     this.teamWin,
     this.maxScore,
+    this.remainingTime,
+    this.currentRound,
   });
 
   factory MatchModel.fromMap(Map<String, dynamic> json) => MatchModel(
@@ -30,10 +34,12 @@ class MatchModel {
         nameTeam2: json['name_team_2'] ?? '',
         scoreTeam1: json['score_team_1'],
         scoreTeam2: json['score_team_2'],
-        isFinished: json['is_finished'],
+        timerType: json['timer_type'],
         teamWin: json['team_win'],
         gameType: json['game_type'],
         maxScore: json['max_score'],
+        remainingTime: json['remaining_time'],
+        currentRound: json['current_round'],
       );
 
   Map<String, dynamic> toMap() {
@@ -43,10 +49,12 @@ class MatchModel {
       'name_team_2': nameTeam2,
       'score_team_1': scoreTeam1,
       'score_team_2': scoreTeam2,
-      'is_finished': isFinished,
+      'timer_type': timerType,
       'team_win': teamWin,
       'game_type': gameType,
       'max_score': maxScore,
+      'remaining_time': remainingTime,
+      'current_round': currentRound,
     };
 
     if (id != null) {
