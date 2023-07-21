@@ -63,7 +63,7 @@ class DatabaseHelper {
         .map((e) => MatchModel.fromMap(e))
         .toList()
         .where((element) => element.timerType != 3)
-        .toList();
+        .toList().reversed.toList();
   }
 
   Future<List<MatchModel>> getFinishedMatches() async {
@@ -73,7 +73,7 @@ class DatabaseHelper {
         .map((e) => MatchModel.fromMap(e))
         .toList()
         .where((element) => element.timerType == 3)
-        .toList();
+        .toList().reversed.toList();
   }
 
   Future<List<RoundModel>> getRounds() async {

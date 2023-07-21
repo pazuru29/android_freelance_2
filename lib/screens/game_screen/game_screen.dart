@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:android_freelance_2/conmonents/app_button.dart';
 import 'package:android_freelance_2/conmonents/app_rounded_icon_button.dart';
 import 'package:android_freelance_2/conmonents/app_text.dart';
@@ -64,7 +62,7 @@ class _GameScreenState extends BaseScreenState<GameScreen> {
                           widget.gameController.matchModel?.timerType == 2
                       ? 'Start Game'
                       : widget.gameController.matchModel?.timerType == 3
-                          ? 'Dublicate game'
+                          ? 'Duplicate Game'
                           : 'Pause',
                   bgColor: widget.gameController.matchModel?.timerType == 0 ||
                           widget.gameController.matchModel?.timerType == 2
@@ -79,6 +77,8 @@ class _GameScreenState extends BaseScreenState<GameScreen> {
                     } else if (widget.gameController.matchModel?.timerType ==
                         1) {
                       _gameController.pauseTimer();
+                    } else {
+                      _gameController.duplicateMatch();
                     }
                   },
                 ),
@@ -265,7 +265,7 @@ class _GameScreenState extends BaseScreenState<GameScreen> {
               child: Center(
                 child: AppText(
                   text:
-                      '${((_gameController.roundsTime.first - _gameController.currentTime.toInt()) ~/ 60).toString().padLeft(2, '0')}:${((_gameController.roundsTime.first - _gameController.currentTime.toInt()) % 60).toString().padLeft(2, '0')}',
+                      '${((_gameController.currentRoundTime - _gameController.currentTime.toInt()) ~/ 60).toString().padLeft(2, '0')}:${((_gameController.currentRoundTime - _gameController.currentTime.toInt()) % 60).toString().padLeft(2, '0')}',
                   style: AppTextStyles.regular17,
                 ),
               ),

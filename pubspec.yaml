@@ -44,6 +44,19 @@ dependencies:
   sqflite: ^2.2.8+4
   intl: ^0.18.1
   shared_preferences: ^2.2.0
+  flutter_local_notifications: ^15.1.0+1
+  timezone: ^0.9.2
+  percent_indicator: ^4.2.3
+  flutter_native_splash: ^2.3.1
+
+flutter_native_splash:
+  image: assets/images/im_logo.png
+  color: "#0D0422"
+  android: true
+  ios: true
+
+  android_12:
+    color: "#0D0422"
 
 dev_dependencies:
   flutter_test:

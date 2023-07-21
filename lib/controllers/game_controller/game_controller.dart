@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:android_freelance_2/controllers/home_controller/home_controller.dart';
+import 'package:android_freelance_2/controllers/navigation/app_navigator.dart';
 import 'package:android_freelance_2/data/database/database_helper.dart';
 import 'package:android_freelance_2/data/database/models/match_model.dart';
+import 'package:android_freelance_2/data/database/models/round_model.dart';
 import 'package:android_freelance_2/utils/extansions/app_date.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,7 +16,7 @@ class GameController extends GetxController {
 
   bool get isRoundMatch => _isRoundMatch.value;
 
-  late bool isFinished;
+  bool isFinished = false;
 
   final HomeController _homeController = Get.find();
 
@@ -96,7 +98,9 @@ class GameController extends GetxController {
 
   double get currentTime => _currentTime.value;
 
-  int _currentRoundTime = 0;
+  final RxInt _currentRoundTime = 0.obs;
+
+  int get currentRoundTime => _currentRoundTime.value;
 
   void setCurrentTime(double currentTime) => _currentTime.value = currentTime;
 
@@ -106,20 +110,20 @@ class GameController extends GetxController {
     _matchModel.value.value?.timerType = 1;
     updateMatchModel();
     changeMatchModel(_matchModel.value.value);
-    _currentRoundTime = roundsTime[_matchModel.value.value!.currentRound! - 1];
     _timer = Timer.periodic(
       const Duration(milliseconds: 25),
       (timer) {
         _currentTime.value += 0.025;
         print(_currentTime.value);
-        if (_currentTime >= _currentRoundTime) {
+        if (_currentTime >= _currentRoundTime.value) {
           timer.cancel();
           if (_matchModel.value.value!.currentRound! < roundsTime.length) {
-            _currentRoundTime =
+            _currentRoundTime.value =
                 roundsTime[_matchModel.value.value!.currentRound!];
             _matchModel.value.value?.timerType = 2;
             _matchModel.value.value?.currentRound =
                 _matchModel.value.value!.currentRound! + 1;
+            _matchModel.value.value?.remainingTime = null;
             updateMatchModel();
           } else {
             _matchModel.value.value?.timerType = 3;
@@ -129,9 +133,11 @@ class GameController extends GetxController {
                     : matchModel!.scoreTeam2 > matchModel!.scoreTeam1
                         ? 2
                         : 0;
+            _matchModel.value.value?.remainingTime = null;
             updateMatchModel();
             _homeController.refreshAllData();
           }
+
           _currentTime.value = 0;
         }
       },
@@ -148,8 +154,10 @@ class GameController extends GetxController {
   @override
   void onInit() {
     refreshMatchModel().whenComplete(() {
-      checkTimeAfterCloseApp();
       _currentTime.value = matchModel?.remainingTime?.toDouble() ?? 0;
+      _currentRoundTime.value =
+          roundsTime.isNotEmpty ? roundsTime[matchModel!.currentRound! - 1] : 0;
+      checkTimeAfterCloseApp();
     });
     super.onInit();
   }
@@ -187,5 +195,42 @@ class GameController extends GetxController {
       prefs.remove('$id');
       prefs.remove('${id}_dateTime');
     }
+  }
+
+  void duplicateMatch() async {
+    await DatabaseHelper.instance
+        .addMatch(MatchModel(
+      name: matchModel?.name,
+      nameTeam1: matchModel?.nameTeam1 ?? '',
+      nameTeam2: matchModel?.nameTeam2 ?? '',
+      scoreTeam1: 0,
+      scoreTeam2: 0,
+      timerType: 0,
+      gameType: matchModel?.gameType ?? 0,
+      maxScore: matchModel?.maxScore,
+      currentRound: 1,
+    ))
+        .then((value) {
+      if (matchModel?.maxScore == null) {
+        var iterator = 1;
+        for (final element in roundsTime) {
+          DatabaseHelper.instance.addRound(
+            RoundModel(
+              id: value ?? -1,
+              numberOfRound: iterator,
+              timeOfRound: element,
+            ),
+          );
+          iterator++;
+        }
+      }
+      _homeController.refreshAllData().whenComplete(() {
+        AppNavigator.goBack();
+        Get.put(_homeController.listOfMatchesGameControllers[value.toString()]!,
+            tag: value.toString());
+        AppNavigator.goToGameScreen(
+            _homeController.listOfMatchesGameControllers[value.toString()]!);
+      });
+    });
   }
 }

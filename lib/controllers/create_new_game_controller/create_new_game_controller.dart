@@ -174,8 +174,9 @@ class CreateNewGameController extends GetxController {
           );
         }
       }
-      _homeController.refreshAllData();
-      AppNavigator.goBack();
+      _homeController
+          .refreshAllData()
+          .whenComplete(() => AppNavigator.goBack());
     });
   }
 }

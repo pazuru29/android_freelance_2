@@ -7,7 +7,7 @@ import 'package:android_freelance_2/utils/app_strings.dart';
 import 'package:android_freelance_2/utils/app_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:measure_size/measure_size.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OnBoardingScreen extends BaseScreen {
   const OnBoardingScreen({super.key});
@@ -63,8 +63,11 @@ class _OnBoardingScreenState extends BaseScreenState<OnBoardingScreen> {
           const Spacer(),
           AppButton(
             title: 'Create first match',
-            onPressed: () {
-              AppNavigator.replaceToHomeScreen();
+            onPressed: () async {
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              prefs.setBool('isFirstRun', false).whenComplete(() {
+                AppNavigator.replaceToHomeScreen();
+              });
             },
           ),
           const Gap(16),

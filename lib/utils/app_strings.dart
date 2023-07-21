@@ -19,6 +19,11 @@ class AppStrings {
   //Create new game screen
   static const String newMatch = 'New match';
 
+  //Notification
+  static const String notificationTitle = 'Time\'s up';
+  static const String notificationDescription =
+      'Time is up, go to the app to view the details.';
+
   //Privacy Policy screen
   static const String titlePrivacyPolicy = 'Lorem ipsum';
   static const String subtitlePrivacyPolicy =

@@ -15,12 +15,12 @@ class HomeController extends GetxController {
     super.onInit();
   }
 
-  void refreshAllData() {
-    refreshActiveMatches();
-    refreshFinishedMatches();
+  Future refreshAllData() async {
+    await refreshActiveMatches();
+    await refreshFinishedMatches();
   }
 
-  void refreshActiveMatches() async {
+  Future refreshActiveMatches() async {
     listOfActiveMatches.value =
         await DatabaseHelper.instance.getActiveMatches();
     for (final element in listOfActiveMatches) {
@@ -31,7 +31,7 @@ class HomeController extends GetxController {
     }
   }
 
-  void refreshFinishedMatches() async {
+  Future refreshFinishedMatches() async {
     listOfFinishedMatches.value =
         await DatabaseHelper.instance.getFinishedMatches();
     for (final element in listOfFinishedMatches) {

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:android_freelance_2/conmonents/app_text.dart';
 import 'package:android_freelance_2/controllers/game_controller/game_controller.dart';
 import 'package:android_freelance_2/controllers/navigation/app_navigator.dart';
+import 'package:android_freelance_2/notifications/notifications_controller.dart';
 import 'package:android_freelance_2/utils/app_colors.dart';
 import 'package:android_freelance_2/utils/app_icons.dart';
 import 'package:android_freelance_2/utils/app_text_style.dart';
@@ -37,16 +38,20 @@ class _MatchCardState extends State<MatchCard> with WidgetsBindingObserver {
       print('PAUSED');
       if (_gameController.matchModel?.timerType == 1) {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setDouble(
-            '${_gameController.id}', _gameController.currentTime);
+        prefs.setDouble('${_gameController.id}', _gameController.currentTime);
         prefs.setString('${_gameController.id}_dateTime',
             AppDate.dataBaseFormatter(DateTime.now()));
         _gameController.pauseTimer();
+        NotificationsController.startNotifications(
+            (_gameController.currentRoundTime - _gameController.currentTime)
+                .toInt(),
+            _gameController.id);
       }
     }
 
     if (state == AppLifecycleState.resumed) {
       _gameController.checkTimeAfterCloseApp();
+      NotificationsController.cancelAll();
     }
   }
 
@@ -226,7 +231,7 @@ class _MatchCardState extends State<MatchCard> with WidgetsBindingObserver {
                           _gameController.matchModel?.timerType != 0 &&
                           _gameController.matchModel?.timerType != 3 &&
                           _gameController.roundsTime.isNotEmpty
-                      ? '${((_gameController.roundsTime.first - _gameController.currentTime.toInt()) ~/ 60).toString().padLeft(2, '0')}:${((_gameController.roundsTime.first - _gameController.currentTime.toInt()) % 60).toString().padLeft(2, '0')}'
+                      ? '${((_gameController.currentRoundTime - _gameController.currentTime.toInt()) ~/ 60).toString().padLeft(2, '0')}:${((_gameController.currentRoundTime - _gameController.currentTime.toInt()) % 60).toString().padLeft(2, '0')}'
                       : 'VS',
               style: AppTextStyles.semiBold25,
             ),
