@@ -66,7 +66,8 @@ class _OnBoardingScreenState extends BaseScreenState<OnBoardingScreen> {
             onPressed: () async {
               SharedPreferences prefs = await SharedPreferences.getInstance();
               prefs.setBool('isFirstRun', false).whenComplete(() {
-                AppNavigator.replaceToHomeScreen();
+                AppNavigator.replaceToHomeScreen(context);
+                AppNavigator.goToCreateNewGameScreen(context);
               });
             },
           ),

@@ -8,6 +8,7 @@ import 'package:android_freelance_2/conmonents/drop_down_menu/select_time_round_
 import 'package:android_freelance_2/conmonents/secondary_app_bar.dart';
 import 'package:android_freelance_2/conmonents/drop_down_menu/selected_type_game_widget.dart';
 import 'package:android_freelance_2/controllers/create_new_game_controller/create_new_game_controller.dart';
+import 'package:android_freelance_2/data/database/models/match_model.dart';
 import 'package:android_freelance_2/utils/app_colors.dart';
 import 'package:android_freelance_2/utils/app_strings.dart';
 import 'package:android_freelance_2/utils/app_text_style.dart';
@@ -16,14 +17,21 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:measure_size/measure_size.dart';
 
-class CreateNewGameScreen extends BaseScreen {
-  const CreateNewGameScreen({super.key});
+class EditScreen extends BaseScreen {
+  final MatchModel matchModel;
+  final List<int> roundTime;
+
+  const EditScreen({
+    required this.matchModel,
+    required this.roundTime,
+    super.key,
+  });
 
   @override
-  State<CreateNewGameScreen> createState() => _CreateNewGameScreenState();
+  State<EditScreen> createState() => _CreateNewGameScreenState();
 }
 
-class _CreateNewGameScreenState extends BaseScreenState<CreateNewGameScreen> {
+class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
   late final CreateNewGameController _createNewGameController;
 
   final TextEditingController _nameController = TextEditingController();
@@ -41,6 +49,12 @@ class _CreateNewGameScreenState extends BaseScreenState<CreateNewGameScreen> {
   @override
   void initState() {
     _createNewGameController = Get.put(CreateNewGameController());
+    _createNewGameController.setInitEditData(
+        widget.matchModel, widget.roundTime);
+    _nameController.text = widget.matchModel.name ?? '';
+    _nameTeam1Controller.text = widget.matchModel.nameTeam1;
+    _nameTeam2Controller.text = widget.matchModel.nameTeam2;
+    isButtonActive = true;
     super.initState();
   }
 
@@ -51,7 +65,7 @@ class _CreateNewGameScreenState extends BaseScreenState<CreateNewGameScreen> {
         () => Column(
           children: [
             SecondaryAppBar(
-              title: AppStrings.newMatch,
+              title: 'Edit match',
               titleBack: AppStrings.btnBack,
               child: AppButton(
                 title: AppStrings.btnDone,
@@ -60,8 +74,9 @@ class _CreateNewGameScreenState extends BaseScreenState<CreateNewGameScreen> {
                 onPressed: !isButtonActive
                     ? null
                     : () {
-                        _createNewGameController.saveMatch(
+                        _createNewGameController.editMatch(
                           context,
+                          widget.matchModel,
                           _nameController.text.isEmpty
                               ? null
                               : _nameController.text,

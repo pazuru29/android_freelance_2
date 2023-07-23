@@ -4,6 +4,7 @@ import 'package:android_freelance_2/conmonents/app_text.dart';
 import 'package:android_freelance_2/conmonents/base_screen.dart';
 import 'package:android_freelance_2/conmonents/secondary_app_bar.dart';
 import 'package:android_freelance_2/controllers/game_controller/game_controller.dart';
+import 'package:android_freelance_2/controllers/navigation/app_navigator.dart';
 import 'package:android_freelance_2/utils/app_colors.dart';
 import 'package:android_freelance_2/utils/app_icons.dart';
 import 'package:android_freelance_2/utils/app_text_style.dart';
@@ -14,9 +15,11 @@ import 'package:get/get.dart';
 
 class GameScreen extends BaseScreen {
   final GameController gameController;
+  final int id;
 
   const GameScreen({
     required this.gameController,
+    required this.id,
     super.key,
   });
 
@@ -27,9 +30,11 @@ class GameScreen extends BaseScreen {
 class _GameScreenState extends BaseScreenState<GameScreen> {
   late GameController _gameController;
 
+  bool _isMenuActive = false;
+
   @override
   void initState() {
-    _gameController = Get.find(tag: widget.gameController.id.toString());
+    _gameController = Get.find<GameController>(tag: widget.id.toString());
     super.initState();
   }
 
@@ -37,54 +42,204 @@ class _GameScreenState extends BaseScreenState<GameScreen> {
   Widget buildMain(BuildContext context) {
     return SafeArea(
       child: Obx(
-        () => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SecondaryAppBar(
-              title: _getGameTypeName(),
-              titleBack: 'Back to matches',
-              subtitle: _gameController.isRoundMatch
-                  ? '${_gameController.matchModel?.currentRound}'
-                  : widget.gameController.matchModel?.name ?? 'My game',
-              child: GestureDetector(
-                onTap: () {},
-                child: SvgPicture.asset(AppIcons.icMore),
-              ),
-            ),
-            _scoreWidget(),
-            const Gap(45),
-            _rulesWidget(),
-            if (widget.gameController.matchModel?.maxScore == null)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(25, 35, 25, 45),
-                child: AppButton(
-                  title: widget.gameController.matchModel?.timerType == 0 ||
-                          widget.gameController.matchModel?.timerType == 2
-                      ? 'Start Game'
-                      : widget.gameController.matchModel?.timerType == 3
-                          ? 'Duplicate Game'
-                          : 'Pause',
-                  bgColor: widget.gameController.matchModel?.timerType == 0 ||
-                          widget.gameController.matchModel?.timerType == 2
-                      ? AppColors.green
-                      : widget.gameController.matchModel?.timerType == 3
-                          ? AppColors.lightPurple
-                          : AppColors.red,
-                  onPressed: () {
-                    if (widget.gameController.matchModel?.timerType == 0 ||
-                        widget.gameController.matchModel?.timerType == 2) {
-                      _gameController.startTimer();
-                    } else if (widget.gameController.matchModel?.timerType ==
-                        1) {
-                      _gameController.pauseTimer();
-                    } else {
-                      _gameController.duplicateMatch();
-                    }
-                  },
+        () => GestureDetector(
+          onTap: () {
+            setState(() {
+              _isMenuActive = false;
+            });
+          },
+          child: Container(
+            color: Colors.transparent,
+            child: Stack(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SecondaryAppBar(
+                      title: _getGameTypeName(),
+                      titleBack: 'Back to matches',
+                      subtitle: _gameController.isRoundMatch &&
+                              (_gameController.matchModel?.timerType == 0 ||
+                                  _gameController.matchModel?.timerType == 3)
+                          ? 'Rounds: ${_gameController.roundsTime.length}'
+                          : _gameController.isRoundMatch
+                              ? 'Round ${_gameController.matchModel?.currentRound}'
+                              : widget.gameController.matchModel?.name ??
+                                  'My game',
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _isMenuActive = !_isMenuActive;
+                          });
+                        },
+                        child: Container(
+                          color: Colors.transparent,
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: SvgPicture.asset(AppIcons.icMore),
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      child: CustomScrollView(
+                        shrinkWrap: true,
+                        slivers: [
+                          SliverToBoxAdapter(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _scoreWidget(),
+                                const Gap(45),
+                                _rulesWidget(),
+                                if (widget.gameController.matchModel
+                                            ?.maxScore ==
+                                        null ||
+                                    widget.gameController.matchModel
+                                            ?.timerType ==
+                                        3)
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        25, 35, 25, 45),
+                                    child: AppButton(
+                                      title: widget.gameController.matchModel
+                                                      ?.timerType ==
+                                                  0 ||
+                                              widget.gameController.matchModel
+                                                      ?.timerType ==
+                                                  2
+                                          ? 'Start Game'
+                                          : widget.gameController.matchModel
+                                                      ?.timerType ==
+                                                  3
+                                              ? 'Duplicate Game'
+                                              : 'Pause',
+                                      bgColor: widget.gameController.matchModel
+                                                      ?.timerType ==
+                                                  0 ||
+                                              widget.gameController.matchModel
+                                                      ?.timerType ==
+                                                  2
+                                          ? AppColors.green
+                                          : widget.gameController.matchModel
+                                                      ?.timerType ==
+                                                  3
+                                              ? AppColors.lightPurple
+                                              : AppColors.red,
+                                      onPressed: () {
+                                        if (widget.gameController.matchModel
+                                                    ?.timerType ==
+                                                0 ||
+                                            widget.gameController.matchModel
+                                                    ?.timerType ==
+                                                2) {
+                                          _gameController.startTimer();
+                                        } else if (widget.gameController
+                                                .matchModel?.timerType ==
+                                            1) {
+                                          _gameController.pauseTimer();
+                                        } else {
+                                          _gameController
+                                              .duplicateMatch(context);
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                if (widget
+                                        .gameController.matchModel?.maxScore ==
+                                    null)
+                                  _history(),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            if (widget.gameController.matchModel?.maxScore == null) _history(),
-          ],
+                if (_isMenuActive && _gameController.matchModel?.timerType == 0)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 36, right: 25),
+                        child: Container(
+                          height: 95,
+                          width: 182,
+                          decoration: BoxDecoration(
+                            color: AppColors.backgroundActivity,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              AppButton(
+                                title: 'Edit',
+                                height: 47,
+                                bgColor: AppColors.backgroundActivity,
+                                childColor: AppColors.white,
+                                borderRadius: const BorderRadius.only(
+                                    topRight: Radius.circular(10),
+                                    topLeft: Radius.circular(10)),
+                                onPressed: () {
+                                  setState(() {
+                                    _isMenuActive = false;
+                                  });
+                                  AppNavigator.replaceToEditScreen(
+                                      context,
+                                      _gameController.matchModel!,
+                                      _gameController.roundsTime);
+                                },
+                              ),
+                              Container(
+                                height: 1,
+                                color: AppColors.purple,
+                              ),
+                              AppButton(
+                                title: 'Delete',
+                                height: 47,
+                                bgColor: AppColors.backgroundActivity,
+                                childColor: AppColors.red,
+                                borderRadius: const BorderRadius.only(
+                                    bottomRight: Radius.circular(10),
+                                    bottomLeft: Radius.circular(10)),
+                                onPressed: () {
+                                  _gameController.deleteMatch(context);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                if (_isMenuActive && _gameController.matchModel?.timerType != 0)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 36, right: 25),
+                        child: Container(
+                          width: 182,
+                          decoration: BoxDecoration(
+                            color: AppColors.backgroundActivity,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: AppButton(
+                            title: 'Delete',
+                            height: 47,
+                            bgColor: AppColors.backgroundActivity,
+                            childColor: AppColors.red,
+                            borderRadius: BorderRadius.circular(10),
+                            onPressed: () {
+                              _gameController.deleteMatch(context);
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -264,8 +419,9 @@ class _GameScreenState extends BaseScreenState<GameScreen> {
               ),
               child: Center(
                 child: AppText(
-                  text:
-                      '${((_gameController.currentRoundTime - _gameController.currentTime.toInt()) ~/ 60).toString().padLeft(2, '0')}:${((_gameController.currentRoundTime - _gameController.currentTime.toInt()) % 60).toString().padLeft(2, '0')}',
+                  text: _gameController.matchModel?.timerType == 3
+                      ? '${((_gameController.roundsTime.first) ~/ 60).toString().padLeft(2, '0')}:${((_gameController.roundsTime.first) % 60).toString().padLeft(2, '0')}'
+                      : '${((_gameController.currentRoundTime - _gameController.currentTime.toInt()) ~/ 60).toString().padLeft(2, '0')}:${((_gameController.currentRoundTime - _gameController.currentTime.toInt()) % 60).toString().padLeft(2, '0')}',
                   style: AppTextStyles.regular17,
                 ),
               ),
@@ -277,18 +433,54 @@ class _GameScreenState extends BaseScreenState<GameScreen> {
   }
 
   Widget _history() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 25),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 25),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppText(text: 'History', style: AppTextStyles.bold21),
-          Gap(10),
-          AppText(
-            text: 'Nothing happened yet',
-            style: AppTextStyles.regular19,
-            color: AppColors.lightPurple,
-          )
+          const AppText(text: 'History', style: AppTextStyles.bold21),
+          const Gap(10),
+          if (_gameController.listOfHistory.isEmpty)
+            const AppText(
+              text: 'Nothing happened yet',
+              style: AppTextStyles.regular19,
+              color: AppColors.lightPurple,
+            ),
+          if (_gameController.listOfHistory.isNotEmpty)
+            Container(
+              padding: const EdgeInsets.fromLTRB(25, 8, 25, 18),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: AppColors.lightPurple,
+                ),
+              ),
+              child: ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                itemCount: _gameController.listOfHistory.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        AppText(
+                            text:
+                                _gameController.listOfHistory[index].nameOfTeam,
+                            style: AppTextStyles.regular17),
+                        const AppText(
+                            text: '+1', style: AppTextStyles.semiBold19),
+                        AppText(
+                            text: _gameController.listOfHistory[index].time,
+                            style: AppTextStyles.regular17),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
         ],
       ),
     );

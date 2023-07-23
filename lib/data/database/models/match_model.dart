@@ -10,6 +10,7 @@ class MatchModel {
   int gameType;
   int? maxScore;
   num? remainingTime;
+  String? remainingDate;
   int? currentRound;
 
   MatchModel({
@@ -24,6 +25,7 @@ class MatchModel {
     this.teamWin,
     this.maxScore,
     this.remainingTime,
+    this.remainingDate,
     this.currentRound,
   });
 
@@ -39,6 +41,7 @@ class MatchModel {
         gameType: json['game_type'],
         maxScore: json['max_score'],
         remainingTime: json['remaining_time'],
+        remainingDate: json['remaining_date'],
         currentRound: json['current_round'],
       );
 
@@ -54,6 +57,7 @@ class MatchModel {
       'game_type': gameType,
       'max_score': maxScore,
       'remaining_time': remainingTime,
+      'remaining_date': remainingDate,
       'current_round': currentRound,
     };
 

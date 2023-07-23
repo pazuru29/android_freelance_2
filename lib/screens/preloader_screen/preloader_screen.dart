@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:android_freelance_2/conmonents/base_screen.dart';
+import 'package:android_freelance_2/controllers/home_controller/home_controller.dart';
 import 'package:android_freelance_2/controllers/navigation/app_navigator.dart';
 import 'package:android_freelance_2/main.dart';
 import 'package:android_freelance_2/utils/app_colors.dart';
 import 'package:android_freelance_2/utils/app_images.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 class PreloaderScreen extends BaseScreen {
@@ -20,6 +22,7 @@ class _PreloaderScreenState extends BaseScreenState<PreloaderScreen> {
 
   @override
   void initState() {
+    Get.put(HomeController(), permanent: true);
     _getProgress();
     super.initState();
   }
@@ -69,9 +72,9 @@ class _PreloaderScreenState extends BaseScreenState<PreloaderScreen> {
         } else {
           timer.cancel();
           if (isFirstRun) {
-            AppNavigator.replaceToOnBoardingScreen();
+            AppNavigator.replaceToOnBoardingScreen(context);
           } else {
-            AppNavigator.replaceToHomeScreen();
+            AppNavigator.replaceToHomeScreen(context);
           }
         }
       });

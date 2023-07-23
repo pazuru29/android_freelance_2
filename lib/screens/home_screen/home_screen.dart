@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:android_freelance_2/conmonents/app_button.dart';
 import 'package:android_freelance_2/conmonents/app_icon_button.dart';
 import 'package:android_freelance_2/conmonents/app_text.dart';
@@ -6,6 +8,7 @@ import 'package:android_freelance_2/conmonents/main_app_bar.dart';
 import 'package:android_freelance_2/controllers/game_controller/game_controller.dart';
 import 'package:android_freelance_2/controllers/home_controller/home_controller.dart';
 import 'package:android_freelance_2/controllers/navigation/app_navigator.dart';
+import 'package:android_freelance_2/notifications/notifications_controller.dart';
 import 'package:android_freelance_2/screens/home_screen/widgets/match_card.dart';
 import 'package:android_freelance_2/utils/app_colors.dart';
 import 'package:android_freelance_2/utils/app_icons.dart';
@@ -23,23 +26,64 @@ class HomeScreen extends BaseScreen {
 }
 
 class _HomeScreenState extends BaseScreenState<HomeScreen>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   late final HomeController _homeController;
 
   late final TabController _tabController;
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.paused) {
+      for (final element in _homeController.listOfActiveMatches) {
+        GameController gameController = Get.find(tag: element.id.toString());
+        gameController.onDetached();
+        print("PAUSED");
+        if (gameController.matchModel?.timerType == 1) {
+          NotificationsController.startNotifications(
+              (gameController.currentRoundTime - gameController.currentTime)
+                  .toInt(),
+              gameController.id);
+          print('NOTIFICATION CREATED');
+        }
+      }
+    }
+
+    if(state == AppLifecycleState.detached) {
+      for (final element in _homeController.listOfActiveMatches) {
+        GameController gameController = Get.find(tag: element.id.toString());
+        gameController.onDetached();
+        print("PAUSED");
+        if (gameController.matchModel?.timerType == 1) {
+          NotificationsController.startNotifications(
+              (gameController.currentRoundTime - gameController.currentTime)
+                  .toInt(),
+              gameController.id);
+          print('NOTIFICATION CREATED');
+        }
+      }
+    }
+
+    if (state == AppLifecycleState.resumed) {
+      NotificationsController.cancelAll();
+      print('RESUMED');
+      for (final element in _homeController.listOfActiveMatches) {
+        GameController gameController = Get.find(tag: element.id.toString());
+        gameController.checkTimeAfterCloseApp();
+      }
+    }
+  }
+
+  @override
   void initState() {
-    _homeController = Get.put(
-      HomeController(),
-      permanent: true,
-    );
+    WidgetsBinding.instance.addObserver(this);
+    _homeController = Get.find<HomeController>();
     _tabController = TabController(length: 2, vsync: this);
     super.initState();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _tabController.dispose();
     super.dispose();
   }
@@ -55,7 +99,7 @@ class _HomeScreenState extends BaseScreenState<HomeScreen>
               child: AppIconButton(
                 assetName: AppIcons.icSettings,
                 onPressed: () {
-                  AppNavigator.goToSettingsScreen();
+                  AppNavigator.goToSettingsScreen(context);
                 },
               ),
             ),
@@ -119,7 +163,6 @@ class _HomeScreenState extends BaseScreenState<HomeScreen>
                           padding: EdgeInsets.only(top: 36),
                           child: Center(
                             child: AppText(
-                              key: ValueKey('-43543634'),
                               text: 'No sports matches were created.',
                               style: AppTextStyles.medium16,
                               color: AppColors.purpleText,
@@ -136,7 +179,7 @@ class _HomeScreenState extends BaseScreenState<HomeScreen>
                           child: AppButton.outlined(
                             title: AppStrings.btnCreateNewMatch,
                             onPressed: () {
-                              AppNavigator.goToCreateNewGameScreen();
+                              AppNavigator.goToCreateNewGameScreen(context);
                             },
                           ),
                         );
@@ -144,14 +187,19 @@ class _HomeScreenState extends BaseScreenState<HomeScreen>
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 15),
                         child: MatchCard(
-                          key: ValueKey(_homeController
-                              .listOfActiveMatches[index].id
-                              .toString()),
+                          key: ValueKey(index.toString() +
+                              _homeController.listOfActiveMatches[index].id
+                                  .toString() +
+                              _homeController
+                                  .listOfActiveMatches[index].timerType
+                                  .toString()),
                           gameController: _homeController
                                       .listOfMatchesGameControllers[
                                   _homeController.listOfActiveMatches[index].id
                                       .toString()] ??
                               GameController(),
+                          id: _homeController.listOfActiveMatches[index].id ??
+                              -1,
                         ),
                       );
                     },
@@ -169,7 +217,6 @@ class _HomeScreenState extends BaseScreenState<HomeScreen>
                           padding: EdgeInsets.only(top: 36),
                           child: Center(
                             child: AppText(
-                              key: ValueKey('-313213213'),
                               text: 'No sports matches were created.',
                               style: AppTextStyles.medium16,
                               color: AppColors.purpleText,
@@ -187,7 +234,7 @@ class _HomeScreenState extends BaseScreenState<HomeScreen>
                           child: AppButton.outlined(
                             title: AppStrings.btnCreateNewMatch,
                             onPressed: () {
-                              AppNavigator.goToCreateNewGameScreen();
+                              AppNavigator.goToCreateNewGameScreen(context);
                             },
                           ),
                         );
@@ -195,15 +242,20 @@ class _HomeScreenState extends BaseScreenState<HomeScreen>
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 15),
                         child: MatchCard(
-                          key: ValueKey(_homeController
-                              .listOfFinishedMatches[index].id
-                              .toString()),
+                          key: ValueKey(index.toString() +
+                              _homeController.listOfFinishedMatches[index].id
+                                  .toString() +
+                              _homeController
+                                  .listOfFinishedMatches[index].timerType
+                                  .toString()),
                           gameController:
                               _homeController.listOfMatchesGameControllers[
                                       _homeController
                                           .listOfFinishedMatches[index].id
                                           .toString()] ??
                                   GameController(),
+                          id: _homeController.listOfFinishedMatches[index].id ??
+                              -1,
                         ),
                       );
                     },
@@ -223,7 +275,7 @@ class _HomeScreenState extends BaseScreenState<HomeScreen>
                 child: AppButton.outlined(
                   title: AppStrings.btnCreateNewMatch,
                   onPressed: () {
-                    AppNavigator.goToCreateNewGameScreen();
+                    AppNavigator.goToCreateNewGameScreen(context);
                   },
                 ),
               ),

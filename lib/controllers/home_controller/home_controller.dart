@@ -4,7 +4,7 @@ import 'package:android_freelance_2/data/database/models/match_model.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
-  final RxMap<String, GameController> listOfMatchesGameControllers =
+  RxMap<String, GameController> listOfMatchesGameControllers =
       <String, GameController>{}.obs;
   final RxList<MatchModel> listOfActiveMatches = <MatchModel>[].obs;
   final RxList<MatchModel> listOfFinishedMatches = <MatchModel>[].obs;
@@ -16,6 +16,7 @@ class HomeController extends GetxController {
   }
 
   Future refreshAllData() async {
+    Get.deleteAll();
     await refreshActiveMatches();
     await refreshFinishedMatches();
   }
@@ -24,10 +25,9 @@ class HomeController extends GetxController {
     listOfActiveMatches.value =
         await DatabaseHelper.instance.getActiveMatches();
     for (final element in listOfActiveMatches) {
-      listOfMatchesGameControllers.putIfAbsent(element.id.toString(), () {
-        GameController gameController = GameController()..id = element.id ?? -1;
-        return gameController;
-      });
+      GameController gameController = GameController()..id = element.id ?? -1;
+      listOfMatchesGameControllers[element.id.toString()] = gameController;
+      Get.put<GameController>(gameController, tag: element.id.toString());
     }
   }
 
@@ -35,10 +35,9 @@ class HomeController extends GetxController {
     listOfFinishedMatches.value =
         await DatabaseHelper.instance.getFinishedMatches();
     for (final element in listOfFinishedMatches) {
-      listOfMatchesGameControllers.putIfAbsent(element.id.toString(), () {
-        GameController gameController = GameController()..id = element.id ?? -1;
-        return gameController;
-      });
+      GameController gameController = GameController()..id = element.id ?? -1;
+      listOfMatchesGameControllers[element.id.toString()] = gameController;
+      Get.put<GameController>(gameController, tag: element.id.toString());
     }
   }
 }

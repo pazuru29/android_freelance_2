@@ -32,7 +32,7 @@ class SecondaryAppBar extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: (){
-                  AppNavigator.goBack();
+                  AppNavigator.goBack(context);
                 },
                 child: Container(
                   color: Colors.transparent,

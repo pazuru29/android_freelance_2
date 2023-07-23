@@ -1,10 +1,12 @@
 import 'package:android_freelance_2/conmonents/drop_down_menu/models/app_drop_down_button_model.dart';
+import 'package:android_freelance_2/controllers/game_controller/game_controller.dart';
 import 'package:android_freelance_2/controllers/home_controller/home_controller.dart';
 import 'package:android_freelance_2/controllers/navigation/app_navigator.dart';
 import 'package:android_freelance_2/data/database/database_helper.dart';
 import 'package:android_freelance_2/data/database/models/match_model.dart';
 import 'package:android_freelance_2/data/database/models/round_model.dart';
 import 'package:android_freelance_2/utils/app_icons.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CreateNewGameController extends GetxController {
@@ -139,7 +141,97 @@ class CreateNewGameController extends GetxController {
     super.onInit();
   }
 
-  void saveMatch(String? name, String nameTeam1, String nameTeam2) {
+  void setInitEditData(MatchModel matchModel, List<int> roundTime) {
+    if (matchModel.maxScore == null && roundTime.isNotEmpty) {
+      _countOfRounds.value = roundTime.length;
+      _currentFirstRoundType.value = listOfTime
+          .firstWhere((element) => element.valueDatabase == roundTime.first);
+    } else {
+      _currentFirstRoundType.value = listOfTime.first;
+    }
+
+    if (roundTime.length > 1 &&
+        matchModel.maxScore == null &&
+        roundTime.isNotEmpty) {
+      _currentSecondRoundType.value = listOfTime
+          .firstWhere((element) => element.valueDatabase == roundTime[1]);
+    } else {
+      _currentSecondRoundType.value = listOfTime.first;
+    }
+
+    if (roundTime.length > 2 &&
+        matchModel.maxScore == null &&
+        roundTime.isNotEmpty) {
+      _currentThirdRoundType.value = listOfTime
+          .firstWhere((element) => element.valueDatabase == roundTime[2]);
+    } else {
+      _currentThirdRoundType.value = listOfTime.first;
+    }
+
+    if (roundTime.length > 3 &&
+        matchModel.maxScore == null &&
+        roundTime.isNotEmpty) {
+      _currentForthRoundType.value = listOfTime
+          .firstWhere((element) => element.valueDatabase == roundTime[3]);
+    } else {
+      _currentForthRoundType.value = listOfTime.first;
+    }
+
+    _rulesType.value = matchModel.maxScore == null ? 0 : 1;
+
+    _currentScoreType.value = listOfScore.firstWhereOrNull(
+            (element) => element.valueDatabase == matchModel.maxScore) ??
+        listOfScore.first;
+
+    _currentGameType.value.value = listOfTypeGame.firstWhereOrNull(
+            (element) => element.valueDatabase == matchModel.gameType) ??
+        listOfTypeGame.first;
+  }
+
+  void editMatch(BuildContext context, MatchModel matchModel, String? name,
+      String nameTeam1, String nameTeam2) {
+    DatabaseHelper.instance.deleteRounds(matchModel);
+    GameController gameController = Get.find(tag: matchModel.id.toString());
+    gameController.changeMatchModel(MatchModel(
+      id: matchModel.id,
+      name: name,
+      nameTeam1: nameTeam1,
+      nameTeam2: nameTeam2,
+      scoreTeam1: 0,
+      scoreTeam2: 0,
+      timerType: 0,
+      remainingTime: _rulesType.value == 0 ? 0 : null,
+      currentRound: 1,
+      gameType: _currentGameType.value.value?.valueDatabase ?? 0,
+      maxScore: _rulesType.value == 1
+          ? int.tryParse(_currentScoreType.value.title)
+          : null,
+    ));
+    gameController.updateMatchModel();
+    if (_rulesType.value == 0) {
+      List<int> listForController = [];
+      List<int> listOfTime = [];
+      listOfTime.add(_currentFirstRoundType.value.valueDatabase ?? 0);
+      listOfTime.add(_currentSecondRoundType.value.valueDatabase ?? 0);
+      listOfTime.add(_currentThirdRoundType.value.valueDatabase ?? 0);
+      listOfTime.add(_currentForthRoundType.value.valueDatabase ?? 0);
+      for (var i = 0; i < _countOfRounds.value; i++) {
+        listForController.add(listOfTime[i]);
+        DatabaseHelper.instance.addRound(
+          RoundModel(
+            id: matchModel.id ?? -1,
+            numberOfRound: i + 1,
+            timeOfRound: listOfTime[i],
+          ),
+        );
+      }
+      gameController.roundsTime.value = listForController;
+    }
+    AppNavigator.goBack(context);
+  }
+
+  void saveMatch(
+      BuildContext context, String? name, String nameTeam1, String nameTeam2) {
     DatabaseHelper.instance
         .addMatch(
       MatchModel(
@@ -174,9 +266,11 @@ class CreateNewGameController extends GetxController {
           );
         }
       }
-      _homeController
-          .refreshAllData()
-          .whenComplete(() => AppNavigator.goBack());
+      _homeController.refreshAllData().whenComplete(() {
+        GameController gameController =
+            Get.find<GameController>(tag: value.toString());
+        AppNavigator.replaceToGameScreen(context, gameController, value ?? -1);
+      });
     });
   }
 }

@@ -31,7 +31,7 @@ class _ThirdAppBarState extends State<ThirdAppBar> {
         children: [
           GestureDetector(
             onTap: () {
-              AppNavigator.goBack();
+              AppNavigator.goBack(context);
             },
             child: MeasureSize(
               onChange: (size) {

@@ -38,7 +38,7 @@ class _SettingsScreenState extends BaseScreenState<SettingsScreen> {
             title: 'Privacy Policy',
             assetName: AppIcons.icColumnist,
             onPressed: () {
-              AppNavigator.goToPrivacyPolicyScreen();
+              AppNavigator.goToPrivacyPolicyScreen(context);
             },
           ),
           const Gap(12),
@@ -46,7 +46,7 @@ class _SettingsScreenState extends BaseScreenState<SettingsScreen> {
             title: 'Terms of Use',
             assetName: AppIcons.icPapers,
             onPressed: () {
-              AppNavigator.goToTermsOfUseScreen();
+              AppNavigator.goToTermsOfUseScreen(context);
             },
           ),
         ],

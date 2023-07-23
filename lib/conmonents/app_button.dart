@@ -6,9 +6,10 @@ import 'package:flutter/material.dart';
 
 class AppButton extends StatefulWidget {
   final String title;
-  final Color bgColor;
+  final Color bgColor, childColor;
   final double? width;
-  final double height, borderRadius;
+  final double height;
+  final BorderRadius? borderRadius;
   final bool needShadow;
   final VoidCallback? onPressed;
   bool isOutlined = false;
@@ -17,10 +18,11 @@ class AppButton extends StatefulWidget {
     Key? key,
     required this.title,
     this.bgColor = AppColors.lightPurple,
+    this.childColor = AppColors.darkPurpleText,
     this.width,
     this.height = 55,
     this.needShadow = false,
-    this.borderRadius = 100,
+    this.borderRadius,
     this.onPressed,
   }) : super(key: key);
 
@@ -105,7 +107,7 @@ class _AppButtonState extends State<AppButton> {
                   ),
                 ]
               : null,
-          borderRadius: BorderRadius.circular(widget.borderRadius),
+          borderRadius: widget.borderRadius ?? BorderRadius.circular(100),
           border: widget.isOutlined
               ? Border.all(color: _getMainColor(), width: 2)
               : null,
@@ -125,11 +127,11 @@ class _AppButtonState extends State<AppButton> {
   }
 
   Color _getTextColor() {
-    Color color = AppColors.darkPurpleText;
+    Color color = widget.childColor;
     if (widget.onPressed == null) {
-      color = AppColors.darkPurpleText.withOpacity(0.5);
+      color = widget.childColor.withOpacity(0.5);
     } else if (_isHighlighted) {
-      color = AppColors.darkPurpleText.withOpacity(0.7);
+      color = widget.childColor.withOpacity(0.7);
     }
 
     return color;

@@ -40,6 +40,7 @@ class DatabaseHelper {
     game_type INTEGER NOT NULL,
     max_score INTEGER,
     remaining_time REAL,
+    remaining_date TEXT,
     current_round INTEGER
     )''');
 
@@ -50,8 +51,9 @@ class DatabaseHelper {
     )''');
 
     await db.execute('''CREATE TABLE history (
-    id INTEGER NOT NULL,
-    nameOfTeam TEXT NOT NULL,
+    id INTEGER PRIMARY KEY,
+    match_id INTEGER NOT NULL,
+    name_of_team TEXT NOT NULL,
     time TEXT NOT NULL
     )''');
   }
@@ -63,7 +65,9 @@ class DatabaseHelper {
         .map((e) => MatchModel.fromMap(e))
         .toList()
         .where((element) => element.timerType != 3)
-        .toList().reversed.toList();
+        .toList()
+        .reversed
+        .toList();
   }
 
   Future<List<MatchModel>> getFinishedMatches() async {
@@ -73,7 +77,9 @@ class DatabaseHelper {
         .map((e) => MatchModel.fromMap(e))
         .toList()
         .where((element) => element.timerType == 3)
-        .toList().reversed.toList();
+        .toList()
+        .reversed
+        .toList();
   }
 
   Future<List<RoundModel>> getRounds() async {
@@ -86,6 +92,17 @@ class DatabaseHelper {
     Database db = await instance.database;
     var history = await db.query('history');
     return history.map((e) => HistoryModel.fromMap(e)).toList();
+  }
+
+  Future<List<HistoryModel>> getHistoryById(int id) async {
+    Database db = await instance.database;
+    var history =
+        await db.query('history', where: 'match_id = ?', whereArgs: [id]);
+    return history
+        .map((e) => HistoryModel.fromMap(e))
+        .toList()
+        .reversed
+        .toList();
   }
 
   //MatchModel
@@ -105,10 +122,12 @@ class DatabaseHelper {
         where: 'id = ?', whereArgs: [matchModel.id]);
   }
 
-  Future<MatchModel> getActiveMatchesById(int id) async {
+  Future<MatchModel?> getActiveMatchesById(int id) async {
     Database db = await instance.database;
     var match = await db.query('matches', where: 'id = ?', whereArgs: [id]);
-    return match.map((e) => MatchModel.fromMap(e)).toList().first;
+    return match.map((e) => MatchModel.fromMap(e)).toList().isNotEmpty
+        ? match.map((e) => MatchModel.fromMap(e)).toList().first
+        : null;
   }
 
   //RoundModel
@@ -140,6 +159,19 @@ class DatabaseHelper {
 
   Future<int?> deleteHistory(MatchModel matchModel) async {
     Database db = await instance.database;
-    return db.delete('rounds', where: 'id = ?', whereArgs: [matchModel.id]);
+    return db
+        .delete('history', where: 'match_id = ?', whereArgs: [matchModel.id]);
+  }
+
+  Future<int?> deleteOneHistory(HistoryModel historyModel) async {
+    Database db = await instance.database;
+    return db.delete('history',
+        where: 'id = ? and match_id = ? and name_of_team = ? and time = ?',
+        whereArgs: [
+          historyModel.id,
+          historyModel.matchId,
+          historyModel.nameOfTeam,
+          historyModel.time
+        ]);
   }
 }

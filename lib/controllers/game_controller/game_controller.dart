@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:android_freelance_2/controllers/home_controller/home_controller.dart';
 import 'package:android_freelance_2/controllers/navigation/app_navigator.dart';
 import 'package:android_freelance_2/data/database/database_helper.dart';
+import 'package:android_freelance_2/data/database/models/history_model.dart';
 import 'package:android_freelance_2/data/database/models/match_model.dart';
 import 'package:android_freelance_2/data/database/models/round_model.dart';
 import 'package:android_freelance_2/utils/extansions/app_date.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,36 +26,36 @@ class GameController extends GetxController {
 
   MatchModel? get matchModel => _matchModel.value.value;
 
-  void changeMatchModel(MatchModel? matchModel) =>
+  void changeMatchModel(MatchModel matchModel) =>
       _matchModel.value.value = matchModel;
 
-  void setRemainingTime() {
-    _matchModel.value.value?.remainingTime = _currentTime.value;
-    updateMatchModel();
-  }
+  final RxList<HistoryModel> listOfHistory = <HistoryModel>[].obs;
 
   RxList<int> roundsTime = <int>[].obs;
 
+  //Work with score
   void onScorePlusPressed(bool isTeam1) {
     if (isTeam1) {
       if (isRoundMatch && matchModel?.timerType == 1) {
         _matchModel.value.value?.scoreTeam1 += 1;
+        _matchModel.value.value?.remainingTime = _currentTime.value;
         updateMatchModel();
-        checkOnFinishGame();
+        addHistory(matchModel?.nameTeam1 ?? '');
       } else if (!isRoundMatch) {
         _matchModel.value.value?.scoreTeam1 += 1;
         updateMatchModel();
-        checkOnFinishGame();
+        checkOnFinishScoreGame();
       }
     } else {
       if (isRoundMatch && matchModel?.timerType == 1) {
         _matchModel.value.value?.scoreTeam2 += 1;
+        _matchModel.value.value?.remainingTime = _currentTime.value;
         updateMatchModel();
-        checkOnFinishGame();
+        addHistory(matchModel?.nameTeam2 ?? '');
       } else if (!isRoundMatch) {
         _matchModel.value.value?.scoreTeam2 += 1;
         updateMatchModel();
-        checkOnFinishGame();
+        checkOnFinishScoreGame();
       }
     }
   }
@@ -64,7 +66,10 @@ class GameController extends GetxController {
           matchModel?.timerType == 1 &&
           matchModel!.scoreTeam1 > 0) {
         _matchModel.value.value?.scoreTeam1 -= 1;
+        _matchModel.value.value?.remainingTime = _currentTime.value;
         updateMatchModel();
+        deleteOneHistory(listOfHistory.firstWhere(
+            (element) => element.nameOfTeam == matchModel?.nameTeam1));
       } else if (!isRoundMatch && matchModel!.scoreTeam1 > 0) {
         _matchModel.value.value?.scoreTeam1 -= 1;
         updateMatchModel();
@@ -74,7 +79,10 @@ class GameController extends GetxController {
           matchModel?.timerType == 1 &&
           matchModel!.scoreTeam2 > 0) {
         _matchModel.value.value?.scoreTeam2 -= 1;
+        _matchModel.value.value?.remainingTime = _currentTime.value;
         updateMatchModel();
+        deleteOneHistory(listOfHistory.firstWhere(
+            (element) => element.nameOfTeam == matchModel?.nameTeam2));
       } else if (!isRoundMatch && matchModel!.scoreTeam2 > 0) {
         _matchModel.value.value?.scoreTeam2 -= 1;
         updateMatchModel();
@@ -82,18 +90,18 @@ class GameController extends GetxController {
     }
   }
 
-  void checkOnFinishGame() {
+  void checkOnFinishScoreGame() {
     if (matchModel?.scoreTeam1 == matchModel?.maxScore ||
         matchModel?.scoreTeam2 == matchModel?.maxScore) {
       _matchModel.value.value?.timerType = 3;
       _matchModel.value.value?.teamWin =
           matchModel!.scoreTeam1 > matchModel!.scoreTeam2 ? 1 : 2;
       updateMatchModel();
-      _homeController.refreshAllData();
+      refreshAllDataHomeController();
     }
   }
 
-  // Timer time
+  // Work with timer
   final RxDouble _currentTime = 0.0.obs;
 
   double get currentTime => _currentTime.value;
@@ -106,10 +114,13 @@ class GameController extends GetxController {
 
   late Timer _timer;
 
+  bool isTimerActive = false;
+
   void startTimer() {
     _matchModel.value.value?.timerType = 1;
+    _matchModel.value.value?.remainingTime = _currentTime.value;
     updateMatchModel();
-    changeMatchModel(_matchModel.value.value);
+    isTimerActive = true;
     _timer = Timer.periodic(
       const Duration(milliseconds: 25),
       (timer) {
@@ -135,9 +146,8 @@ class GameController extends GetxController {
                         : 0;
             _matchModel.value.value?.remainingTime = null;
             updateMatchModel();
-            _homeController.refreshAllData();
+            refreshAllDataHomeController();
           }
-
           _currentTime.value = 0;
         }
       },
@@ -145,59 +155,128 @@ class GameController extends GetxController {
   }
 
   void pauseTimer() {
+    isTimerActive = false;
+    _timer.cancel();
+    _matchModel.value.value?.remainingTime = _currentTime.value;
     _matchModel.value.value?.timerType = 2;
     updateMatchModel();
-    changeMatchModel(_matchModel.value.value);
-    _timer.cancel();
   }
 
+  //Game controller lifecycle
   @override
   void onInit() {
-    refreshMatchModel().whenComplete(() {
-      _currentTime.value = matchModel?.remainingTime?.toDouble() ?? 0;
-      _currentRoundTime.value =
-          roundsTime.isNotEmpty ? roundsTime[matchModel!.currentRound! - 1] : 0;
+    takeMatchModel().whenComplete(() async {
+      _isRoundMatch.value = matchModel?.maxScore == null;
+
       checkTimeAfterCloseApp();
     });
     super.onInit();
   }
 
-  Future refreshMatchModel() async {
+  @override
+  InternalFinalCallback<void> get onDelete {
+    onDetached();
+    return super.onDelete;
+  }
+
+  void onDetached() async {
+    _matchModel.value.value?.remainingDate =
+        AppDate.dataBaseFormatter(DateTime.now());
+    if (matchModel?.timerType == 1) {
+      print('TIMER CANCEL');
+      _timer.cancel();
+      isTimerActive = false;
+    }
+    _matchModel.value.value?.remainingTime = _currentTime.value;
+    updateMatchModel();
+  }
+
+  void checkTimeAfterCloseApp() async {
+    if (matchModel?.remainingDate != null &&
+        matchModel?.timerType == 1 &&
+        !isTimerActive) {
+      DateTime time = AppDate.fromDataBaseFormatter(matchModel!.remainingDate!);
+      _currentTime.value = matchModel!.remainingTime! +
+          (DateTime.now().difference(time).inMilliseconds / 1000);
+      startTimer();
+    } else {
+      _currentTime.value = matchModel?.remainingTime?.toDouble() ?? 0;
+    }
+  }
+
+  //Work with match
+  Future takeMatchModel() async {
     await DatabaseHelper.instance.getActiveMatchesById(id).then((value) async {
-      _matchModel.value.value = value;
-      _isRoundMatch.value = value.maxScore == null;
-      isFinished = value.timerType == 3;
-      if (value.maxScore == null) {
-        var listOfRounds = await DatabaseHelper.instance.getRoundsById(id);
-        roundsTime.value = [];
-        for (final element in listOfRounds) {
-          roundsTime.add(element.timeOfRound);
+      if (value != null) {
+        _matchModel.value.value = value;
+        isFinished = value.timerType == 3;
+        if (matchModel?.maxScore == null) {
+          var listOfRounds = await DatabaseHelper.instance.getRoundsById(id);
+          List<int> list = [];
+          for (final element in listOfRounds) {
+            list.add(element.timeOfRound);
+          }
+          roundsTime.value = list;
+          getHistory();
         }
+        _currentRoundTime.value = roundsTime.isNotEmpty
+            ? roundsTime[matchModel!.currentRound! - 1]
+            : 0;
+        _currentTime.value = value.remainingTime?.toDouble() ?? 0;
       }
     });
   }
 
   void updateMatchModel() async {
-    await DatabaseHelper.instance
-        .updateMatchById(_matchModel.value.value!)
-        .whenComplete(() => refreshMatchModel());
-  }
-
-  void checkTimeAfterCloseApp() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    double? remainingTime = prefs.getDouble('$id');
-    String? resumedTime = prefs.getString('${id}_dateTime');
-    if (remainingTime != null && resumedTime != null) {
-      DateTime time = AppDate.fromDataBaseFormatter(resumedTime);
-      setCurrentTime(remainingTime +
-          (DateTime.now().difference(time).inMilliseconds / 1000));
-      startTimer();
-      prefs.remove('$id');
-      prefs.remove('${id}_dateTime');
+    if (_matchModel.value.value != null) {
+      await DatabaseHelper.instance
+          .updateMatchById(_matchModel.value.value!)
+          .whenComplete(() => takeMatchModel());
     }
   }
 
-  void duplicateMatch() async {
+  void refreshAllDataHomeController() {
+    _homeController.refreshAllData();
+  }
+
+  void deleteMatch(BuildContext context) {
+    if (matchModel?.maxScore == null) {
+      DatabaseHelper.instance.deleteRounds(matchModel!);
+      DatabaseHelper.instance.deleteHistory(matchModel!);
+    }
+    DatabaseHelper.instance.deleteMatchById(matchModel!);
+    _homeController.listOfMatchesGameControllers.remove(id.toString());
+    Get.delete<GameController>(tag: id.toString());
+    AppNavigator.goBack(context);
+    refreshAllDataHomeController();
+  }
+
+  //Work with history of match
+  void getHistory() async {
+    listOfHistory.value = await DatabaseHelper.instance.getHistoryById(id);
+  }
+
+  void deleteOneHistory(HistoryModel historyModel) {
+    DatabaseHelper.instance
+        .deleteOneHistory(historyModel)
+        .whenComplete(() => getHistory());
+  }
+
+  void addHistory(String nameOfTeam) {
+    DatabaseHelper.instance
+        .addHistory(
+          HistoryModel(
+            matchId: id,
+            nameOfTeam: nameOfTeam,
+            time:
+                '${((currentTime.toInt()) ~/ 60).toString().padLeft(2, '0')}:${((currentTime.toInt()) % 60).toString().padLeft(2, '0')}',
+          ),
+        )
+        .whenComplete(() => getHistory());
+  }
+
+  //Duplicate match
+  void duplicateMatch(BuildContext context) async {
     await DatabaseHelper.instance
         .addMatch(MatchModel(
       name: matchModel?.name,
@@ -225,11 +304,9 @@ class GameController extends GetxController {
         }
       }
       _homeController.refreshAllData().whenComplete(() {
-        AppNavigator.goBack();
-        Get.put(_homeController.listOfMatchesGameControllers[value.toString()]!,
-            tag: value.toString());
-        AppNavigator.goToGameScreen(
-            _homeController.listOfMatchesGameControllers[value.toString()]!);
+        GameController gameController =
+            Get.find<GameController>(tag: value.toString());
+        AppNavigator.replaceToGameScreen(context, gameController, value ?? -1);
       });
     });
   }
