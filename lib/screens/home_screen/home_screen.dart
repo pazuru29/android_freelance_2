@@ -35,29 +35,14 @@ class _HomeScreenState extends BaseScreenState<HomeScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.paused) {
       for (final element in _homeController.listOfActiveMatches) {
-        GameController gameController = Get.find(tag: element.id.toString());
+        GameController gameController = Get.find<GameController>(tag: element.id.toString());
         gameController.onDetached();
+        int currentRoundTime = gameController.currentRoundTime;
+        double currentTime = gameController.currentTime;
         print("PAUSED");
         if (gameController.matchModel?.timerType == 1) {
           NotificationsController.startNotifications(
-              (gameController.currentRoundTime - gameController.currentTime)
-                  .toInt(),
-              gameController.id);
-          print('NOTIFICATION CREATED');
-        }
-      }
-    }
-
-    if(state == AppLifecycleState.detached) {
-      for (final element in _homeController.listOfActiveMatches) {
-        GameController gameController = Get.find(tag: element.id.toString());
-        gameController.onDetached();
-        print("PAUSED");
-        if (gameController.matchModel?.timerType == 1) {
-          NotificationsController.startNotifications(
-              (gameController.currentRoundTime - gameController.currentTime)
-                  .toInt(),
-              gameController.id);
+              (currentRoundTime - currentTime).toInt(), element.id ?? -1);
           print('NOTIFICATION CREATED');
         }
       }

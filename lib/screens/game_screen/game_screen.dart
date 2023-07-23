@@ -81,6 +81,7 @@ class _GameScreenState extends BaseScreenState<GameScreen> {
                     ),
                     Flexible(
                       child: CustomScrollView(
+                        physics: const ClampingScrollPhysics(),
                         shrinkWrap: true,
                         slivers: [
                           SliverToBoxAdapter(
@@ -464,17 +465,41 @@ class _GameScreenState extends BaseScreenState<GameScreen> {
                   return Padding(
                     padding: const EdgeInsets.only(top: 10),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        AppText(
-                            text:
-                                _gameController.listOfHistory[index].nameOfTeam,
-                            style: AppTextStyles.regular17),
-                        const AppText(
-                            text: '+1', style: AppTextStyles.semiBold19),
-                        AppText(
-                            text: _gameController.listOfHistory[index].time,
-                            style: AppTextStyles.regular17),
+                        Flexible(
+                          child: Row(
+                            children: [
+                              Flexible(
+                                child: AppText(
+                                  text: _gameController
+                                      .listOfHistory[index].nameOfTeam,
+                                  style: AppTextStyles.regular17,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Flexible(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              AppText(
+                                  text: '+1', style: AppTextStyles.semiBold19),
+                            ],
+                          ),
+                        ),
+                        Flexible(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              AppText(
+                                  text:
+                                      _gameController.listOfHistory[index].time,
+                                  style: AppTextStyles.regular17),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   );

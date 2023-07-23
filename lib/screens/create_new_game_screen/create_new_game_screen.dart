@@ -198,6 +198,9 @@ class _CreateNewGameScreenState extends BaseScreenState<CreateNewGameScreen> {
                       ),
                     ),
                   ),
+                  SliverToBoxAdapter(
+                    child: Gap(MediaQuery.of(context).padding.bottom + 16),
+                  ),
                 ],
               ),
             ),
