@@ -50,7 +50,7 @@ class CreateNewGameController extends GetxController {
   List<AppDropDownButtonModel> listOfTime = [
     AppDropDownButtonModel(title: '90:00', valueDatabase: 5400),
     AppDropDownButtonModel(title: '30:00', valueDatabase: 1800),
-    AppDropDownButtonModel(title: '15:00', valueDatabase: 10), //900
+    AppDropDownButtonModel(title: '15:00', valueDatabase: 900),
   ];
 
   List<AppDropDownButtonModel> listOfScore = [
