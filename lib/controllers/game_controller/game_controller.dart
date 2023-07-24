@@ -9,7 +9,6 @@ import 'package:android_freelance_2/data/database/models/round_model.dart';
 import 'package:android_freelance_2/utils/extansions/app_date.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class GameController extends GetxController {
   late final int id;
@@ -188,7 +187,7 @@ class GameController extends GetxController {
       isTimerActive = false;
     }
     _matchModel.value.value?.remainingTime = _currentTime.value;
-    updateMatchModel();
+    saveMatchModel();
   }
 
   void checkTimeAfterCloseApp() async {
@@ -227,11 +226,19 @@ class GameController extends GetxController {
     });
   }
 
+  void saveMatchModel() async {
+    if (_matchModel.value.value != null) {
+      await DatabaseHelper.instance.updateMatchById(_matchModel.value.value!);
+      print('DATA SAVE');
+    }
+  }
+
   void updateMatchModel() async {
     if (_matchModel.value.value != null) {
       await DatabaseHelper.instance
           .updateMatchById(_matchModel.value.value!)
           .whenComplete(() => takeMatchModel());
+      print('DATA UPDATE');
     }
   }
 

@@ -194,17 +194,19 @@ class _MatchCardState extends State<MatchCard> {
                   offset: const Offset(2, 5),
                 )
               ]),
-          child: FittedBox(
-            child: AppText(
-              text: _gameController.isRoundMatch == false
-                  ? '${_gameController.matchModel?.scoreTeam1} - ${_gameController.matchModel?.scoreTeam2}'
-                  : _gameController.isRoundMatch == true &&
-                          _gameController.matchModel?.timerType != 0 &&
-                          _gameController.matchModel?.timerType != 3 &&
-                          _gameController.roundsTime.isNotEmpty
-                      ? '${((_gameController.currentRoundTime - _gameController.currentTime.toInt()) ~/ 60).toString().padLeft(2, '0')}:${((_gameController.currentRoundTime - _gameController.currentTime.toInt()) % 60).toString().padLeft(2, '0')}'
-                      : 'VS',
-              style: AppTextStyles.semiBold25,
+          child: Center(
+            child: FittedBox(
+              child: AppText(
+                text: _gameController.isRoundMatch == false
+                    ? '${_gameController.matchModel?.scoreTeam1} - ${_gameController.matchModel?.scoreTeam2}'
+                    : _gameController.isRoundMatch == true &&
+                            _gameController.matchModel?.timerType != 0 &&
+                            _gameController.matchModel?.timerType != 3 &&
+                            _gameController.roundsTime.isNotEmpty
+                        ? '${((_gameController.currentRoundTime - _gameController.currentTime.toInt()) ~/ 60).toString().padLeft(2, '0')}:${((_gameController.currentRoundTime - _gameController.currentTime.toInt()) % 60).toString().padLeft(2, '0')}'
+                        : 'VS',
+                style: AppTextStyles.semiBold25,
+              ),
             ),
           ),
         ),

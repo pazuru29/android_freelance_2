@@ -61,12 +61,17 @@ class NotificationsController {
   }
 
   // Init settings and start notification
-  static void startNotifications(int secondDelay, int id) async {
-    NotificationsController.showBigTextNotification(
-        id: id,
-        title: AppStrings.notificationTitle,
-        body: AppStrings.notificationDescription,
-        delay: Duration(seconds: secondDelay),
-        fln: flutterLocalNotificationsPlugin);
+  static void startNotifications(List<int> secondDelay) async {
+    int i = 0;
+    for (final element in secondDelay) {
+      NotificationsController.showBigTextNotification(
+          id: i,
+          title: AppStrings.notificationTitle,
+          body: AppStrings.notificationDescription,
+          delay: Duration(seconds: element),
+          fln: flutterLocalNotificationsPlugin);
+      i++;
+      print('NOTIFICATION CREATED');
+    }
   }
 }

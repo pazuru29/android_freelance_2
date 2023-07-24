@@ -14,6 +14,7 @@ import 'package:android_freelance_2/utils/app_colors.dart';
 import 'package:android_freelance_2/utils/app_icons.dart';
 import 'package:android_freelance_2/utils/app_strings.dart';
 import 'package:android_freelance_2/utils/app_text_style.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -33,19 +34,20 @@ class _HomeScreenState extends BaseScreenState<HomeScreen>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
+    List<int> listOfDelay = [];
     if (state == AppLifecycleState.paused) {
       for (final element in _homeController.listOfActiveMatches) {
-        GameController gameController = Get.find<GameController>(tag: element.id.toString());
+        GameController gameController =
+            Get.find<GameController>(tag: element.id.toString());
         gameController.onDetached();
-        int currentRoundTime = gameController.currentRoundTime;
-        double currentTime = gameController.currentTime;
-        print("PAUSED");
         if (gameController.matchModel?.timerType == 1) {
-          NotificationsController.startNotifications(
-              (currentRoundTime - currentTime).toInt(), element.id ?? -1);
-          print('NOTIFICATION CREATED');
+          listOfDelay.add(
+              (gameController.currentRoundTime - gameController.currentTime)
+                  .toInt());
         }
+        print('GAME CONTROLLER DETACHED');
       }
+      NotificationsController.startNotifications(listOfDelay);
     }
 
     if (state == AppLifecycleState.resumed) {
@@ -53,7 +55,7 @@ class _HomeScreenState extends BaseScreenState<HomeScreen>
       print('RESUMED');
       for (final element in _homeController.listOfActiveMatches) {
         GameController gameController = Get.find(tag: element.id.toString());
-        gameController.checkTimeAfterCloseApp();
+        gameController.onInit();
       }
     }
   }
