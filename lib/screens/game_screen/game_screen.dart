@@ -7,6 +7,7 @@ import 'package:android_freelance_2/controllers/game_controller/game_controller.
 import 'package:android_freelance_2/controllers/navigation/app_navigator.dart';
 import 'package:android_freelance_2/utils/app_colors.dart';
 import 'package:android_freelance_2/utils/app_icons.dart';
+import 'package:android_freelance_2/utils/app_strings.dart';
 import 'package:android_freelance_2/utils/app_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -57,7 +58,7 @@ class _GameScreenState extends BaseScreenState<GameScreen> {
                   children: [
                     SecondaryAppBar(
                       title: _getGameTypeName(),
-                      titleBack: 'Back to matches',
+                      titleBack: AppStrings.btnBackToMatches,
                       subtitle: _gameController.isRoundMatch &&
                               (_gameController.matchModel?.timerType == 0 ||
                                   _gameController.matchModel?.timerType == 3)
@@ -65,7 +66,7 @@ class _GameScreenState extends BaseScreenState<GameScreen> {
                           : _gameController.isRoundMatch
                               ? 'Round ${_gameController.matchModel?.currentRound}'
                               : widget.gameController.matchModel?.name ??
-                                  'My game',
+                                  AppStrings.myGame,
                       child: GestureDetector(
                         onTap: () {
                           setState(() {
@@ -107,12 +108,12 @@ class _GameScreenState extends BaseScreenState<GameScreen> {
                                               widget.gameController.matchModel
                                                       ?.timerType ==
                                                   2
-                                          ? 'Start Game'
+                                          ? AppStrings.btnStartGame
                                           : widget.gameController.matchModel
                                                       ?.timerType ==
                                                   3
-                                              ? 'Duplicate Game'
-                                              : 'Pause',
+                                              ? AppStrings.btnDuplicateGame
+                                              : AppStrings.btnPause,
                                       bgColor: widget.gameController.matchModel
                                                       ?.timerType ==
                                                   0 ||
@@ -173,7 +174,7 @@ class _GameScreenState extends BaseScreenState<GameScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               AppButton(
-                                title: 'Edit',
+                                title: AppStrings.btnEdit,
                                 height: 47,
                                 bgColor: AppColors.backgroundActivity,
                                 childColor: AppColors.white,
@@ -195,7 +196,7 @@ class _GameScreenState extends BaseScreenState<GameScreen> {
                                 color: AppColors.purple,
                               ),
                               AppButton(
-                                title: 'Delete',
+                                title: AppStrings.btnDelete,
                                 height: 47,
                                 bgColor: AppColors.backgroundActivity,
                                 childColor: AppColors.red,
@@ -225,7 +226,7 @@ class _GameScreenState extends BaseScreenState<GameScreen> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: AppButton(
-                            title: 'Delete',
+                            title: AppStrings.btnDelete,
                             height: 47,
                             bgColor: AppColors.backgroundActivity,
                             childColor: AppColors.red,
@@ -255,7 +256,7 @@ class _GameScreenState extends BaseScreenState<GameScreen> {
           children: [
             const Gap(17),
             const AppText(
-              text: 'Score',
+              text: AppStrings.score,
               style: AppTextStyles.bold21,
             ),
             const Gap(15),
@@ -372,9 +373,9 @@ class _GameScreenState extends BaseScreenState<GameScreen> {
             const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AppText(text: 'Rules', style: AppTextStyles.bold21),
+                AppText(text: AppStrings.rules, style: AppTextStyles.bold21),
                 Gap(8),
-                AppText(text: 'Max score', style: AppTextStyles.regular17),
+                AppText(text: AppStrings.maxScore, style: AppTextStyles.regular17),
               ],
             ),
             Container(
@@ -403,10 +404,10 @@ class _GameScreenState extends BaseScreenState<GameScreen> {
             const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AppText(text: 'Rules', style: AppTextStyles.bold21),
+                AppText(text: AppStrings.rules, style: AppTextStyles.bold21),
                 Gap(8),
                 AppText(
-                    text: 'Max score per playing time',
+                    text: AppStrings.maxScorePerTime,
                     style: AppTextStyles.regular17),
               ],
             ),
@@ -438,11 +439,11 @@ class _GameScreenState extends BaseScreenState<GameScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AppText(text: 'History', style: AppTextStyles.bold21),
+          const AppText(text: AppStrings.history, style: AppTextStyles.bold21),
           const Gap(10),
           if (_gameController.listOfHistory.isEmpty)
             const AppText(
-              text: 'Nothing happened yet',
+              text: AppStrings.historyHint,
               style: AppTextStyles.regular19,
               color: AppColors.lightPurple,
             ),
@@ -513,13 +514,13 @@ class _GameScreenState extends BaseScreenState<GameScreen> {
   String _getGameTypeName() {
     switch (widget.gameController.matchModel?.gameType) {
       case 2:
-        return 'Basketball';
+        return AppStrings.basketball;
       case 3:
-        return 'Boxing';
+        return AppStrings.boxing;
       case 4:
-        return 'Tennis';
+        return AppStrings.tennis;
       default:
-        return 'Soccer';
+        return AppStrings.soccer;
     }
   }
 

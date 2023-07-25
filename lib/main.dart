@@ -1,5 +1,4 @@
 import 'package:android_freelance_2/notifications/notifications_controller.dart';
-import 'package:android_freelance_2/screens/on_boarding_screen/on_boarding_screen.dart';
 import 'package:android_freelance_2/screens/preloader_screen/preloader_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

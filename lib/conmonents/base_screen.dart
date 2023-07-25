@@ -1,7 +1,6 @@
 import 'package:android_freelance_2/utils/app_colors.dart';
 import 'package:android_freelance_2/utils/app_gradients.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class BaseScreen extends StatefulWidget {
   const BaseScreen({super.key});

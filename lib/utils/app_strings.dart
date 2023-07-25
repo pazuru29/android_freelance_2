@@ -8,7 +8,14 @@ class AppStrings {
   //Buttons
   static const String btnBack = 'Back';
   static const String btnDone = 'Done';
+  static const String btnGameType = 'Game type';
   static const String btnCreateNewMatch = '+ Create new match';
+  static const String btnBackToMatches = 'Back to matches';
+  static const String btnStartGame = 'Start Game';
+  static const String btnDuplicateGame = 'Duplicate Game';
+  static const String btnPause = 'Pause';
+  static const String btnEdit = 'Edit';
+  static const String btnDelete = 'Delete';
 
   //Settings screen
   static const String settings = 'Settings';
@@ -18,11 +25,45 @@ class AppStrings {
 
   //Create new game screen
   static const String newMatch = 'New match';
+  static const String hintName = 'League name (optional)';
+  static const String timeRound = 'Time & Round';
+  static const String addRound = '+ Add round';
+  static const String round4 = '4 round';
+  static const String round3 = '3 round';
+  static const String round2 = '2 round';
+  static const String round1 = '1 round';
+  static const String whoPlays = 'Who plays?';
+  static const String teamNamePlayer = 'Team name or Player name';
+  static const String rules = 'Rules';
+  static const String maxScorePerTime = 'Max score per playing time';
+  static const String maxScore = 'Max score';
+  static const String editMatch = 'Edit match';
+
+  //GameScreen
+  static const String myGame = 'My game';
+  static const String score = 'Score';
+  static const String history = 'History';
+  static const String historyHint = 'Nothing happened yet';
+
+  //HomeScreen
+  static const String matches = 'Matches';
+  static const String active = 'Active';
+  static const String finished = 'Finished';
+  static const String hintMatches = 'No sports matches were created.';
+
+  //OnBoardingScreen
+  static const String createFirstMatch = 'Create first match';
 
   //Notification
   static const String notificationTitle = 'Time\'s up';
   static const String notificationDescription =
       'Time is up, go to the app to view the details.';
+
+  //GameType
+  static const String soccer = 'Soccer';
+  static const String basketball = 'Basketball';
+  static const String boxing = 'Boxing';
+  static const String tennis = 'Tennis';
 
   //Privacy Policy screen
   static const String titlePrivacyPolicy = 'Lorem ipsum';

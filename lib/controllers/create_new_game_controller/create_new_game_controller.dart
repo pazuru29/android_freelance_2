@@ -6,6 +6,8 @@ import 'package:android_freelance_2/data/database/database_helper.dart';
 import 'package:android_freelance_2/data/database/models/match_model.dart';
 import 'package:android_freelance_2/data/database/models/round_model.dart';
 import 'package:android_freelance_2/utils/app_icons.dart';
+import 'package:android_freelance_2/utils/app_strings.dart';
+import 'package:android_freelance_2/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -26,31 +28,31 @@ class CreateNewGameController extends GetxController {
 
   List<AppDropDownButtonModel> listOfTypeGame = [
     AppDropDownButtonModel(
-      title: 'Soccer',
+      title: AppStrings.soccer,
       assetName: AppIcons.icSoccer,
       valueDatabase: 1,
     ),
     AppDropDownButtonModel(
-      title: 'Basketball',
+      title: AppStrings.basketball,
       assetName: AppIcons.icBasketball,
       valueDatabase: 2,
     ),
     AppDropDownButtonModel(
-      title: 'Boxing',
+      title: AppStrings.boxing,
       assetName: AppIcons.icBoxing,
       valueDatabase: 3,
     ),
     AppDropDownButtonModel(
-      title: 'Tennis',
+      title: AppStrings.tennis,
       assetName: AppIcons.icTennis,
       valueDatabase: 4,
     ),
   ];
 
   List<AppDropDownButtonModel> listOfTime = [
-    AppDropDownButtonModel(title: '90:00', valueDatabase: 5400),
-    AppDropDownButtonModel(title: '30:00', valueDatabase: 1800),
-    AppDropDownButtonModel(title: '15:00', valueDatabase: 900),
+    AppDropDownButtonModel(title: '90:00', valueDatabase: k90min),
+    AppDropDownButtonModel(title: '30:00', valueDatabase: k30min),
+    AppDropDownButtonModel(title: '15:00', valueDatabase: k15min),
   ];
 
   List<AppDropDownButtonModel> listOfScore = [
