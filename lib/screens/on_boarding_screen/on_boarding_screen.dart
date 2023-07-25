@@ -22,8 +22,14 @@ class _OnBoardingScreenState extends BaseScreenState<OnBoardingScreen> {
   @override
   Widget buildMain(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Image.asset(AppImages.imOnBoarding),
+        Image.asset(
+          AppImages.imOnBoarding,
+          fit: BoxFit.cover,
+          height: MediaQuery.of(context).size.height / 2,
+          width: MediaQuery.of(context).size.width,
+        ),
         const Gap(40),
         _bodyWidget(),
       ],
@@ -33,43 +39,52 @@ class _OnBoardingScreenState extends BaseScreenState<OnBoardingScreen> {
   Widget _bodyWidget() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 25),
-      height: MediaQuery.of(context).size.height -
-          (_heightOfImage +
-              MediaQuery.of(context).padding.bottom +
-              MediaQuery.of(context).padding.top),
+      height: (MediaQuery.of(context).size.height -
+              (MediaQuery.of(context).padding.bottom +
+                  MediaQuery.of(context).padding.top)) /
+          2,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AppText(
-            text: AppStrings.helloText,
-            style: AppTextStyles.bold30,
-          ),
-          const Gap(7),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Image.asset(AppImages.imLine),
-          ),
-          const Gap(15),
-          const AppText(
-            text: AppStrings.descriptionOnBoarding,
-            style: AppTextStyles.regular17,
-            maxLines: null,
-          ),
-          const Gap(25),
-          const AppText(
-            text: AppStrings.endText,
-            style: AppTextStyles.semiBold17,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const AppText(
+                text: AppStrings.helloText,
+                style: AppTextStyles.bold30,
+              ),
+              const Gap(7),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Image.asset(AppImages.imLine),
+              ),
+              const Gap(15),
+              const AppText(
+                text: AppStrings.descriptionOnBoarding,
+                style: AppTextStyles.regular17,
+                maxLines: null,
+              ),
+              const Gap(25),
+              const AppText(
+                text: AppStrings.endText,
+                style: AppTextStyles.semiBold17,
+              ),
+            ],
           ),
           const Spacer(),
-          AppButton(
-            title: 'Create first match',
-            onPressed: () async {
-              SharedPreferences prefs = await SharedPreferences.getInstance();
-              prefs.setBool('isFirstRun', false).whenComplete(() {
-                AppNavigator.replaceToHomeScreen(context);
-                AppNavigator.goToCreateNewGameScreen(context);
-              });
-            },
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: AppButton(
+              title: 'Create first match',
+              onPressed: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                prefs.setBool('isFirstRun', false).whenComplete(() {
+                  AppNavigator.replaceToHomeScreen(context);
+                  AppNavigator.goToCreateNewGameScreen(context);
+                });
+              },
+            ),
           ),
           const Gap(16),
         ],

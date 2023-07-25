@@ -316,11 +316,10 @@ class _GameScreenState extends BaseScreenState<GameScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Flexible(
-                  child: FittedBox(
-                    child: AppText(
-                      text: nameOfTeam,
-                      style: AppTextStyles.medium16,
-                    ),
+                  child: AppText(
+                    text: nameOfTeam,
+                    style: AppTextStyles.medium16,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 const Gap(4),

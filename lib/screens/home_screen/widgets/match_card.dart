@@ -76,10 +76,20 @@ class _MatchCardState extends State<MatchCard> {
                           ),
                         ],
                       ),
-                      AppText(
-                        text:
-                            widget.gameController.matchModel?.name ?? 'My game',
-                        style: AppTextStyles.medium14,
+                      Flexible(
+                        child: Row(
+                          children: [
+                            const Gap(8),
+                            Flexible(
+                              child: AppText(
+                                text: widget.gameController.matchModel?.name ??
+                                    'My game',
+                                style: AppTextStyles.medium14,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),

@@ -34,6 +34,8 @@ class EditScreen extends BaseScreen {
 class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
   late final CreateNewGameController _createNewGameController;
 
+  final ScrollController _controller = ScrollController();
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _nameTeam1Controller = TextEditingController();
   final TextEditingController _nameTeam2Controller = TextEditingController();
@@ -45,6 +47,8 @@ class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
   double _heightBody = 0;
 
   bool isButtonActive = false;
+
+  int _selectedTime = 0;
 
   @override
   void initState() {
@@ -88,6 +92,7 @@ class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
             ),
             Flexible(
               child: CustomScrollView(
+                controller: _controller,
                 physics: const ClampingScrollPhysics(),
                 shrinkWrap: true,
                 slivers: [
@@ -170,6 +175,7 @@ class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
                                 _createNewGameController.currentForthRoundType,
                                 (value) => _createNewGameController
                                     .changeCurrentForthRoundType(value),
+                                4,
                               ),
                             ),
                           if (_createNewGameController.rulesType == 0 &&
@@ -181,6 +187,7 @@ class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
                                 _createNewGameController.currentThirdRoundType,
                                 (value) => _createNewGameController
                                     .changeCurrentThirdRoundType(value),
+                                3,
                               ),
                             ),
                           if (_createNewGameController.rulesType == 0 &&
@@ -192,6 +199,7 @@ class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
                                 _createNewGameController.currentSecondRoundType,
                                 (value) => _createNewGameController
                                     .changeCurrentSecondRoundType(value),
+                                2,
                               ),
                             ),
                           if (_createNewGameController.rulesType == 0)
@@ -202,6 +210,7 @@ class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
                                 _createNewGameController.currentFirstRoundType,
                                 (value) => _createNewGameController
                                     .changeCurrentFirstRoundType(value),
+                                1,
                               ),
                             ),
                           if (_createNewGameController.rulesType == 1)
@@ -307,15 +316,29 @@ class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
   }
 
   Widget _timeWidget(String title, AppDropDownButtonModel currentValue,
-      Function(AppDropDownButtonModel) onChangeValue) {
+      Function(AppDropDownButtonModel) onChangeValue, int numberOfTime) {
     return SelectTimeRoundWidget(
       title: title,
       currentValue: currentValue,
+      isActive: _selectedTime == numberOfTime,
+      onPressed: () {
+        setState(() {
+          if (_selectedTime == numberOfTime) {
+            _selectedTime = 0;
+          } else {
+            _selectedTime = numberOfTime;
+            _scrollDown();
+          }
+        });
+      },
       listOfValues: _createNewGameController.listOfTime,
       onChangeValue: (value) {
         if (value != null) {
           onChangeValue(value);
         }
+        setState(() {
+          _selectedTime = 0;
+        });
       },
     );
   }
@@ -324,12 +347,26 @@ class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
     return SelectTimeRoundWidget(
       title: 'Max score',
       height: 150,
+      isActive: _selectedTime == 5,
       currentValue: _createNewGameController.currentScoreType,
       listOfValues: _createNewGameController.listOfScore,
       onChangeValue: (value) {
         if (value != null) {
           _createNewGameController.changeCurrentScoreType(value);
         }
+        setState(() {
+          _selectedTime = 0;
+        });
+      },
+      onPressed: () {
+        setState(() {
+          if (_selectedTime == 5) {
+            _selectedTime = 0;
+          } else {
+            _selectedTime = 5;
+            _scrollDown();
+          }
+        });
       },
     );
   }
@@ -339,6 +376,12 @@ class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
       isButtonActive = _nameTeam1Controller.text.isNotEmpty &&
           _nameTeam2Controller.text.isNotEmpty &&
           _createNewGameController.currentGameType != null;
+    });
+  }
+
+  void _scrollDown() {
+    Future.delayed(const Duration(milliseconds: 50), () {
+      _controller.jumpTo(_controller.position.maxScrollExtent);
     });
   }
 

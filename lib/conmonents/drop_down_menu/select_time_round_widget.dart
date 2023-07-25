@@ -14,6 +14,8 @@ class SelectTimeRoundWidget extends StatefulWidget {
   final List<AppDropDownButtonModel> listOfValues;
   final double height;
   final Function(AppDropDownButtonModel?) onChangeValue;
+  final VoidCallback onPressed;
+  final bool isActive;
 
   const SelectTimeRoundWidget({
     required this.title,
@@ -21,6 +23,8 @@ class SelectTimeRoundWidget extends StatefulWidget {
     required this.listOfValues,
     this.height = 115,
     required this.onChangeValue,
+    required this.onPressed,
+    required this.isActive,
     super.key,
   });
 
@@ -29,13 +33,11 @@ class SelectTimeRoundWidget extends StatefulWidget {
 }
 
 class _SelectTimeRoundWidgetState extends State<SelectTimeRoundWidget> {
-  bool _isActive = false;
-
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        if (_isActive)
+        if (widget.isActive)
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -67,18 +69,9 @@ class _SelectTimeRoundWidgetState extends State<SelectTimeRoundWidget> {
                             isSelectedItem: widget.listOfValues[index].title ==
                                 widget.currentValue.title,
                             height: 44,
-                            onPressed: widget.listOfValues[index].title ==
-                                    widget.currentValue.title
-                                ? () => setState(() {
-                                      _isActive = false;
-                                    })
-                                : () {
-                                    setState(() {
-                                      widget.onChangeValue(
-                                          widget.listOfValues[index]);
-                                      _isActive = false;
-                                    });
-                                  },
+                            onPressed: () {
+                              widget.onChangeValue(widget.listOfValues[index]);
+                            },
                           ),
                           if (!(index == widget.listOfValues.length - 1 ||
                               (widget.currentValue.title ==
@@ -99,11 +92,7 @@ class _SelectTimeRoundWidgetState extends State<SelectTimeRoundWidget> {
             ],
           ),
         GestureDetector(
-          onTap: () {
-            setState(() {
-              _isActive = !_isActive;
-            });
-          },
+          onTap: widget.onPressed,
           child: Container(
             width: MediaQuery.of(context).size.width,
             height: 55,
@@ -146,7 +135,7 @@ class _SelectTimeRoundWidgetState extends State<SelectTimeRoundWidget> {
                           ),
                         ),
                         RotatedBox(
-                          quarterTurns: _isActive ? 45 : 135,
+                          quarterTurns: widget.isActive ? 45 : 135,
                           child: SvgPicture.asset(
                             AppIcons.icBack,
                             color: AppColors.white,
