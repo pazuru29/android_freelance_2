@@ -5,13 +5,12 @@ import 'package:android_freelance_2/controllers/game_controller/game_controller.
 import 'package:android_freelance_2/controllers/navigation/app_navigator.dart';
 import 'package:android_freelance_2/utils/app_colors.dart';
 import 'package:android_freelance_2/utils/app_icons.dart';
+import 'package:android_freelance_2/utils/app_strings.dart';
 import 'package:android_freelance_2/utils/app_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-
-import '../../../notifications/notifications_controller.dart';
 
 class MatchCard extends StatefulWidget {
   final GameController gameController;
@@ -83,7 +82,7 @@ class _MatchCardState extends State<MatchCard> {
                             Flexible(
                               child: AppText(
                                 text: widget.gameController.matchModel?.name ??
-                                    'My game',
+                                    AppStrings.myGame,
                                 style: AppTextStyles.medium14,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -262,13 +261,13 @@ class _MatchCardState extends State<MatchCard> {
   String _getGameTypeName() {
     switch (widget.gameController.matchModel?.gameType) {
       case 2:
-        return 'Basketball';
+        return AppStrings.basketball;
       case 3:
-        return 'Boxing';
+        return AppStrings.boxing;
       case 4:
-        return 'Tennis';
+        return AppStrings.tennis;
       default:
-        return 'Soccer';
+        return AppStrings.soccer;
     }
   }
 

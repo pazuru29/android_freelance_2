@@ -69,7 +69,7 @@ class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
         () => Column(
           children: [
             SecondaryAppBar(
-              title: 'Edit match',
+              title: AppStrings.editMatch,
               titleBack: AppStrings.btnBack,
               child: AppButton(
                 title: AppStrings.btnDone,
@@ -116,7 +116,7 @@ class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
                                   controller: _nameController,
                                   focusNode: _nameFocusNode,
                                   height: 55,
-                                  hintText: 'League name (optional)',
+                                  hintText: AppStrings.hintName,
                                   onChanged: (text) {},
                                 ),
                                 const Gap(25),
@@ -144,7 +144,7 @@ class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
                           Padding(
                             padding: EdgeInsets.only(top: _heightBody),
                             child: const AppText(
-                              text: 'Time & Round',
+                              text: AppStrings.timeRound,
                               style: AppTextStyles.bold21,
                             ),
                           ),
@@ -157,7 +157,7 @@ class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
                                       (_createNewGameController.countOfRounds *
                                           65)),
                               child: AppButton.outlined(
-                                title: '+ Add round',
+                                title: AppStrings.addRound,
                                 onPressed: () {
                                   setState(() {
                                     _createNewGameController
@@ -171,7 +171,7 @@ class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
                             Padding(
                               padding: EdgeInsets.only(top: _heightBody + 243),
                               child: _timeWidget(
-                                '4 round',
+                                AppStrings.round4,
                                 _createNewGameController.currentForthRoundType,
                                 (value) => _createNewGameController
                                     .changeCurrentForthRoundType(value),
@@ -183,7 +183,7 @@ class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
                             Padding(
                               padding: EdgeInsets.only(top: _heightBody + 178),
                               child: _timeWidget(
-                                '3 round',
+                                AppStrings.round3,
                                 _createNewGameController.currentThirdRoundType,
                                 (value) => _createNewGameController
                                     .changeCurrentThirdRoundType(value),
@@ -195,7 +195,7 @@ class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
                             Padding(
                               padding: EdgeInsets.only(top: _heightBody + 113),
                               child: _timeWidget(
-                                '2 round',
+                                AppStrings.round2,
                                 _createNewGameController.currentSecondRoundType,
                                 (value) => _createNewGameController
                                     .changeCurrentSecondRoundType(value),
@@ -206,7 +206,7 @@ class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
                             Padding(
                               padding: EdgeInsets.only(top: _heightBody + 48),
                               child: _timeWidget(
-                                '1 round',
+                                AppStrings.round1,
                                 _createNewGameController.currentFirstRoundType,
                                 (value) => _createNewGameController
                                     .changeCurrentFirstRoundType(value),
@@ -236,7 +236,7 @@ class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const AppText(
-          text: 'Who plays?',
+          text: AppStrings.whoPlays,
           style: AppTextStyles.bold21,
         ),
         const Gap(15),
@@ -274,7 +274,7 @@ class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
             controller: controller,
             focusNode: focusNode,
             height: 55,
-            hintText: 'Team name or Player name',
+            hintText: AppStrings.teamNamePlayer,
             needIcon: true,
             onChanged: (text) {
               checkOnButtonActive();
@@ -290,12 +290,12 @@ class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const AppText(
-          text: 'Rules',
+          text: AppStrings.rules,
           style: AppTextStyles.bold21,
         ),
         const Gap(18),
         AppRadioButton(
-          title: 'Max score per playing time',
+          title: AppStrings.maxScorePerTime,
           value: 0,
           groupValue: _createNewGameController.rulesType,
           onPressed: (value) {
@@ -304,7 +304,7 @@ class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
         ),
         const Gap(15),
         AppRadioButton(
-          title: 'Max score',
+          title: AppStrings.maxScore,
           value: 1,
           groupValue: _createNewGameController.rulesType,
           onPressed: (value) {
@@ -345,7 +345,7 @@ class _CreateNewGameScreenState extends BaseScreenState<EditScreen> {
 
   Widget _roundWidget() {
     return SelectTimeRoundWidget(
-      title: 'Max score',
+      title: AppStrings.maxScore,
       height: 150,
       isActive: _selectedTime == 5,
       currentValue: _createNewGameController.currentScoreType,

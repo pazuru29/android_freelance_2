@@ -22,12 +22,12 @@ class _SettingsScreenState extends BaseScreenState<SettingsScreen> {
       child: Column(
         children: [
           const SecondaryAppBar(
-            title: 'Settings',
+            title: AppStrings.settings,
             titleBack: AppStrings.btnBack,
           ),
           const Gap(48),
           SettingsButton(
-            title: 'Notifications',
+            title: AppStrings.notifications,
             assetName: AppIcons.icVolume,
             onPressed: () {
               AppSettings.openAppSettings(type: AppSettingsType.settings);
@@ -35,7 +35,7 @@ class _SettingsScreenState extends BaseScreenState<SettingsScreen> {
           ),
           const Gap(12),
           SettingsButton(
-            title: 'Privacy Policy',
+            title: AppStrings.privacyPolicy,
             assetName: AppIcons.icColumnist,
             onPressed: () {
               AppNavigator.goToPrivacyPolicyScreen(context);
@@ -43,7 +43,7 @@ class _SettingsScreenState extends BaseScreenState<SettingsScreen> {
           ),
           const Gap(12),
           SettingsButton(
-            title: 'Terms of Use',
+            title: AppStrings.termsOfUse,
             assetName: AppIcons.icPapers,
             onPressed: () {
               AppNavigator.goToTermsOfUseScreen(context);

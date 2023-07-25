@@ -48,16 +48,6 @@ class AppTextStyles {
     fontWeight: FontWeight.w500,
   );
 
-  static const AppStyle medium33 = AppStyle(
-    fontSize: 33,
-    fontWeight: FontWeight.w500,
-  );
-
-  static const AppStyle medium80 = AppStyle(
-    fontSize: 80,
-    fontWeight: FontWeight.w500,
-  );
-
   //semiBold
   static const AppStyle semiBold16 = AppStyle(
     fontSize: 16,
@@ -76,11 +66,6 @@ class AppTextStyles {
 
   static const AppStyle semiBold25 = AppStyle(
     fontSize: 25,
-    fontWeight: FontWeight.w600,
-  );
-
-  static const AppStyle semiBold54 = AppStyle(
-    fontSize: 54,
     fontWeight: FontWeight.w600,
   );
 

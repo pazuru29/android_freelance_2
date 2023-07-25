@@ -45,14 +45,14 @@ class _HomeScreenState extends BaseScreenState<HomeScreen>
               (gameController.currentRoundTime - gameController.currentTime)
                   .toInt());
         }
-        print('GAME CONTROLLER DETACHED');
+        debugPrint('GAME CONTROLLER DETACHED');
       }
       NotificationsController.startNotifications(listOfDelay);
     }
 
     if (state == AppLifecycleState.resumed) {
       NotificationsController.cancelAll();
-      print('RESUMED');
+      debugPrint('RESUMED');
       for (final element in _homeController.listOfActiveMatches) {
         GameController gameController = Get.find(tag: element.id.toString());
         gameController.onInit();
@@ -82,7 +82,7 @@ class _HomeScreenState extends BaseScreenState<HomeScreen>
         () => Column(
           children: [
             MainAppBar(
-              title: 'Matches',
+              title: AppStrings.matches,
               child: AppIconButton(
                 assetName: AppIcons.icSettings,
                 onPressed: () {
@@ -107,7 +107,7 @@ class _HomeScreenState extends BaseScreenState<HomeScreen>
                       padding: const EdgeInsets.symmetric(horizontal: 25),
                       color: Colors.transparent,
                       child: AppText(
-                        text: 'Active',
+                        text: AppStrings.active,
                         style: AppTextStyles.semiBold16,
                         color: _tabController.index == 0
                             ? AppColors.white
@@ -120,7 +120,7 @@ class _HomeScreenState extends BaseScreenState<HomeScreen>
                       padding: const EdgeInsets.symmetric(horizontal: 25),
                       color: Colors.transparent,
                       child: AppText(
-                        text: 'Finished',
+                        text: AppStrings.finished,
                         style: AppTextStyles.semiBold16,
                         color: _tabController.index == 1
                             ? AppColors.white
@@ -150,7 +150,7 @@ class _HomeScreenState extends BaseScreenState<HomeScreen>
                           padding: EdgeInsets.only(top: 36),
                           child: Center(
                             child: AppText(
-                              text: 'No sports matches were created.',
+                              text: AppStrings.hintMatches,
                               style: AppTextStyles.medium16,
                               color: AppColors.purpleText,
                             ),
@@ -204,7 +204,7 @@ class _HomeScreenState extends BaseScreenState<HomeScreen>
                           padding: EdgeInsets.only(top: 36),
                           child: Center(
                             child: AppText(
-                              text: 'No sports matches were created.',
+                              text: AppStrings.hintMatches,
                               style: AppTextStyles.medium16,
                               color: AppColors.purpleText,
                             ),

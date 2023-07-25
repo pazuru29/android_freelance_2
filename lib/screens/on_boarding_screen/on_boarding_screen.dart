@@ -76,7 +76,7 @@ class _OnBoardingScreenState extends BaseScreenState<OnBoardingScreen> {
           Padding(
             padding: const EdgeInsets.only(bottom: 16),
             child: AppButton(
-              title: 'Create first match',
+              title: AppStrings.createFirstMatch,
               onPressed: () async {
                 SharedPreferences prefs = await SharedPreferences.getInstance();
                 prefs.setBool('isFirstRun', false).whenComplete(() {

@@ -71,7 +71,7 @@ class NotificationsController {
           delay: Duration(seconds: element),
           fln: flutterLocalNotificationsPlugin);
       i++;
-      print('NOTIFICATION CREATED');
+      debugPrint('NOTIFICATION CREATED');
     }
   }
 }

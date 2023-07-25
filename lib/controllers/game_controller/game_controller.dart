@@ -229,7 +229,7 @@ class GameController extends GetxController {
   void saveMatchModel() async {
     if (_matchModel.value.value != null) {
       await DatabaseHelper.instance.updateMatchById(_matchModel.value.value!);
-      print('DATA SAVE');
+      debugPrint('DATA SAVE');
     }
   }
 
@@ -238,7 +238,7 @@ class GameController extends GetxController {
       await DatabaseHelper.instance
           .updateMatchById(_matchModel.value.value!)
           .whenComplete(() => takeMatchModel());
-      print('DATA UPDATE');
+      debugPrint('DATA UPDATE');
     }
   }
 

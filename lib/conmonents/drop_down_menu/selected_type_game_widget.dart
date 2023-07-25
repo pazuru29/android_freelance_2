@@ -3,6 +3,7 @@ import 'package:android_freelance_2/conmonents/drop_down_menu/models/app_drop_do
 import 'package:android_freelance_2/conmonents/drop_down_menu/widgets/drop_down_menu_button.dart';
 import 'package:android_freelance_2/utils/app_colors.dart';
 import 'package:android_freelance_2/utils/app_icons.dart';
+import 'package:android_freelance_2/utils/app_strings.dart';
 import 'package:android_freelance_2/utils/app_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -111,7 +112,7 @@ class _SelectedTypeGameWidgetState extends State<SelectedTypeGameWidget> {
                   ),
                 if (widget.currentValue == null)
                   const AppText(
-                    text: 'Game type',
+                    text: AppStrings.btnGameType,
                     style: AppTextStyles.bold17,
                   ),
                 RotatedBox(
